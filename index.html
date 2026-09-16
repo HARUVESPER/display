@@ -66,8 +66,27 @@
       align-items: baseline;
       padding-top: 15px;
     }
-    .product-name { font-size: 18px; font-weight: bold; color: #222; margin: 0; line-height: 1.2; }
-    .product-price { font-size: 15px; font-weight: 800; color: #A0A0A0; margin: 0; line-height: 1.2; }
+    .product-name {
+  font-size: 14px; /* 手機版字體稍微縮小 */
+  font-weight: bold;
+  color: #222;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.product-price {
+  font-size: 13px; /* 手機版字體稍微縮小 */
+  font-weight: 800;
+  color: #A0A0A0;
+  margin: 0;
+  line-height: 1.2;
+}
+
+@media (min-width: 600px) {
+  /* 電腦版恢復原本大字體 */
+  .product-name { font-size: 18px; }
+  .product-price { font-size: 15px; }
+}
     .loading { text-align: center; font-size: 16px; color: #666; padding: 50px; grid-column: 1 / -1; }
   </style>
   <script>
