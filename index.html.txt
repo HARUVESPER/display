@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 💡 核心：隱藏網頁來源身分，確保手機瀏覽器載入雲端硬碟圖片時不被阻擋 -->
+  <meta name="referrer" content="no-referrer"> 
+  <title>HARUVESPER衣櫥展示</title>
+  <style>
+    .swiper { margin: auto; position: relative; overflow: hidden; list-style: none; padding: 0; z-index: 1; display: block }
+    .swiper-wrapper { position: relative; width: 100%; height: 100%; z-index: 1; display: flex; transition-property: transform; box-sizing: content-box }
+    .swiper-slide { flex-shrink: 0; width: 100%; height: 100%; position: relative; display: block }
+    .swiper-button-next, .swiper-button-prev { position: absolute; top: 50%; width: 32px; height: 32px; margin-top: -16px; z-index: 10; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; background: rgba(0, 0, 0, 0.4); border-radius: 50%; font-size: 16px; font-weight: bold; user-select: none }
+    .swiper-button-next { right: 10px }
+    .swiper-button-prev { left: 10px }
+    .swiper-button-next::after { content: '>' }
+    .swiper-button-prev::after { content: '<' }
+    .swiper-button-disabled { opacity: .35; pointer-events: none }
+    body { font-family: "Microsoft JhengHei", Arial, sans-serif; background: #f8f9fa; padding: 20px; margin: 0; }
+    h2 { text-align: center; color: #333; margin-bottom: 30px; letter-spacing: 1px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; max-width: 1200px; margin: 0 auto; }
+    .product-card { background: white; border-radius: 16px; padding: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); display: flex; flex-direction: column; box-sizing: border-box; }
+    .swiper { width: 100%; height: 320px; border-radius: 12px; background: #f1f3f5; }
+    .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
+    
+    /* 商品資訊一左一右垂直對齊 */
+    .product-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-top: 15px;
+    }
+    .product-name { font-size: 18px; font-weight: bold; color: #222; margin: 0; line-height: 1.2; }
+    .product-price { font-size: 15px; font-weight: 800; color: #A0A0A0; margin: 0; line-height: 1.2; }
+    .loading { text-align: center; font-size: 16px; color: #666; padding: 50px; grid-column: 1 / -1; }
+  </style>
+  <script>
+    !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):(e="undefined"!=typeof globalThis?globalThis:e||self).Swiper=t()}(this,(function(){"use strict";return class{constructor(e,t={}){this.el=e,this.wrapper=e.querySelector(".swiper-wrapper"),this.slides=Array.from(e.querySelectorAll(".swiper-slide")),this.activeIndex=0,this.params=t,this.init()}init(){if(this.slides.length<=1){if(this.el.querySelector(".swiper-button-next"))this.el.querySelector(".swiper-button-next").style.display="none";if(this.el.querySelector(".swiper-button-prev"))this.el.querySelector(".swiper-button-prev").style.display="none";return}this.nextBtn=this.el.querySelector(".swiper-button-next"),this.prevBtn=this.el.querySelector(".swiper-button-prev"),this.nextBtn.addEventListener("click",(()=>this.slideNext())),this.prevBtn.addEventListener("click",(()=>this.slidePrev())),this.updateButtons()}slideNext(){this.activeIndex<this.slides.length-1?this.activeIndex++:this.params.loop&&(this.activeIndex=0),this.updatePosition()}slidePrev(){this.activeIndex>0?this.activeIndex--:this.params.loop&&(this.activeIndex=this.slides.length-1),this.updatePosition()}updatePosition(){const e=-this.activeIndex*100;this.wrapper.style.transform=`translateX(${e}%)`,this.wrapper.style.transition="transform 0.3s ease",this.updateButtons()}updateButtons(){this.params.loop||(this.activeIndex===this.slides.length-1?this.nextBtn.classList.add("swiper-button-disabled"):this.nextBtn.classList.remove("swiper-button-disabled"),0===this.activeIndex?this.prevBtn.classList.add("swiper-button-disabled"):this.prevBtn.classList.remove("swiper-button-disabled"))}}}));
+  </script>
+</head>
+
+<body>
+  <h2>Bbokari的衣櫥</h2>
+  <div id="gallery" class="grid">
+    <div class="loading">正在連線，尋找衣服...</div>
+  </div>
+  
+  <script>
+    // 💡 關鍵：請將下方的雙引號內容，替換成你新部署的 Google Apps Script API 網址 (/exec 結尾)
+    const gasUrl = "https://script.google.com/macros/s/AKfycbxtv3IkvwhFNf6VmU_A8RDQEiLV8rnKjBxra9eLpfcxOR_XLrXMqTzhbnrsBy_95Ak/exec";
+    
+    // 從外部向你的 Google 後端發送資料請求
+    fetch(gasUrl)
+      .then(response => response.json())
+      .then(data => {
+        renderProducts(data);
+      })
+      .catch(error => {
+        console.error("衣櫥資料連線失敗:", error);
+        document.getElementById('gallery').innerHTML = '<div class="loading">目前可能出現錯誤，衣櫃連線失敗</div>';
+      });
+    
+    function renderProducts(products) {
+      var gallery = document.getElementById('gallery');
+      gallery.innerHTML = '';
+      
+      if (!products || products.length === 0) {
+        gallery.innerHTML = '<div class="loading">目前可能出現錯誤,衣櫃空空如也</div>';
+        return;
+      }
+      
+      products.forEach(function(prod, index) {
+        var card = document.createElement('div');
+        card.className = 'product-card';
+        var slidesHtml = '';
+        
+        prod.images.forEach(function(imgUrl) {
+          // 💡 加上 referrerpolicy="no-referrer" 確保手機能順利載入 Google 直連縮圖
+          slidesHtml += `<div class="swiper-slide"><img src="${imgUrl}" referrerpolicy="no-referrer" loading="lazy"></div>`;
+        });
+        
+        card.innerHTML = `
+          <div class="swiper">
+            <div class="swiper-wrapper">${slidesHtml}</div>
+            <div class="swiper-button-next"></div><div class="swiper-button-prev"></div>
+          </div>
+          <div class="product-info">
+            <div class="product-name">${prod.name}</div>
+            <div class="product-price">${prod.price}</div>
+          </div>
+        `;
+        gallery.appendChild(card);
+        new Swiper(card.querySelector(".swiper"), { loop: true });
+      });
+    }
+  </script>
+</body>
+
+</html>
