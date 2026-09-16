@@ -12,31 +12,33 @@
     .swiper-wrapper { position: relative; width: 100%; height: 100%; z-index: 1; display: flex; transition-property: transform; box-sizing: content-box }
     .swiper-slide { flex-shrink: 0; width: 100%; height: 100%; position: relative; display: block }
     
-    /* 🛠️ 修正：縮小手機版箭頭，並加上輕微外推與透明度，防止直接死死擋在圖片正中央 */
-    .swiper-button-next, .swiper-button-prev { 
-      position: absolute; 
-      top: 50%; 
-      width: 24px; 
-      height: 24px; 
-      margin-top: -12px; 
-      z-index: 10; 
-      cursor: pointer; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      color: #fff; 
-      background: rgba(0, 0, 0, 0.25); 
-      border-radius: 50%; 
-      font-size: 12px; 
-      font-weight: bold; 
-      user-select: none;
-      transition: background 0.2s;
+    /* 🛠️ 新增：小圓點容器（固定在圖片底部中央） */
+    .swiper-pagination {
+      position: absolute;
+      bottom: 8px;
+      left: 0;
+      width: 100%;
+      z-index: 10;
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      pointer-events: none; /* 點擊穿透，不干擾手勢 */
     }
-    .swiper-button-next { right: 4px }
-    .swiper-button-prev { left: 4px }
-    .swiper-button-next::after { content: '>' }
-    .swiper-button-prev::after { content: '<' }
-    .swiper-button-disabled { opacity: .15; pointer-events: none }
+
+    /* 🛠️ 新增：小圓點基本樣式 */
+    .swiper-pagination-dot {
+      width: 6px;
+      height: 6px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 50%;
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    /* 🛠️ 新增：當前選中圖片的圓點樣式（變深、稍微放大增強視覺） */
+    .swiper-pagination-dot.active {
+      background: rgba(0, 0, 0, 0.7);
+      transform: scale(1.1);
+    }
     
     body { font-family: "Microsoft JhengHei", Arial, sans-serif; background: #f8f9fa; padding: 15px; margin: 0; }
     h2 { text-align: center; color: #333; margin-bottom: 20px; letter-spacing: 1px; font-size: 22px; }
@@ -57,7 +59,6 @@
       }
     }
     
-    /* 🛠️ 修正：縮减手機版的 padding，讓白框內縮，畫面更緊湊漂亮 */
     .product-card { 
       background: white; 
       border-radius: 12px; 
@@ -68,7 +69,6 @@
       box-sizing: border-box; 
     }
     
-    /* 🛠️ 修正：配合你的 3:4 圖片，利用 aspect-ratio 完美精準控高，手機版絕對不會再留白太長 */
     .swiper {
       width: 100%;
       aspect-ratio: 3 / 4;
@@ -86,15 +86,11 @@
     @media (min-width: 600px) {
       .swiper {
         aspect-ratio: auto;
-        height: 300px; /* 電腦版維持固定高 */
+        height: 300px; 
       }
       .product-card { padding: 15px; border-radius: 16px; }
-      .swiper-button-next, .swiper-button-prev { width: 32px; height: 32px; margin-top: -16px; font-size: 16px; }
-      .swiper-button-next { right: 10px }
-      .swiper-button-prev { left: 10px }
     }
     
-    /* 商品資訊一左一右垂直對齊 */
     .product-info {
       display: flex;
       justify-content: space-between;
@@ -103,7 +99,6 @@
       gap: 6px;
     }
     
-    /* 🛠️ 修正：縮小字體，並加入防爆版寬設定，字太多時會變 ... 而不擠歪排版 */
     .product-name {
       font-size: 13px; 
       font-weight: bold;
@@ -119,13 +114,12 @@
     .product-price {
       font-size: 12px; 
       font-weight: 800;
-      color: #909090; /* 灰銀色稍微調深增加易讀性 */
+      color: #909090; 
       margin: 0;
       line-height: 1.2;
       flex-shrink: 0;
     }
 
-    /* 補上價格前面的錢字號，增加質感 */
     .product-price::before {
       content: "$";
       font-size: 10px;
@@ -141,7 +135,8 @@
     .loading { text-align: center; font-size: 14px; color: #666; padding: 50px; grid-column: 1 / -1; }
   </style>
   <script>
-    !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):(e="undefined"!=typeof globalThis?globalThis:e||self).Swiper=t()}(this,(function(){"use strict";return class{constructor(e,t={}){this.el=e,this.wrapper=e.querySelector(".swiper-wrapper"),this.slides=Array.from(e.querySelectorAll(".swiper-slide")),this.activeIndex=0,this.params=t,this.init()}init(){if(this.slides.length<=1){if(this.el.querySelector(".swiper-button-next"))this.el.querySelector(".swiper-button-next").style.display="none";if(this.el.querySelector(".swiper-button-prev"))this.el.querySelector(".swiper-button-prev").style.display="none";return}this.nextBtn=this.el.querySelector(".swiper-button-next"),this.prevBtn=this.el.querySelector(".swiper-button-prev"),this.nextBtn.addEventListener("click",(()=>this.slideNext())),this.prevBtn.addEventListener("click",(()=>this.slidePrev())),this.updateButtons()}slideNext(){this.activeIndex<this.slides.length-1?this.activeIndex++:this.params.loop&&(this.activeIndex=0),this.updatePosition()}slidePrev(){this.activeIndex>0?this.activeIndex--:this.params.loop&&(this.activeIndex=this.slides.length-1),this.updatePosition()}updatePosition(){const e=-this.activeIndex*100;this.wrapper.style.transform=`translateX(${e}%)`,this.wrapper.style.transition="transform 0.3s ease",this.updateButtons()}updateButtons(){this.params.loop||(this.activeIndex===this.slides.length-1?this.nextBtn.classList.add("swiper-button-disabled"):this.nextBtn.classList.remove("swiper-button-disabled"),0===this.activeIndex?this.prevBtn.classList.add("swiper-button-disabled"):this.prevBtn.classList.remove("swiper-button-disabled"))}}}));
+    // 🛠️ 升級版極簡 Swiper：支援手勢左右滑動，並會自動同步更新下方的小圓點狀態
+    !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):(e="undefined"!=typeof globalThis?globalThis:e||self).Swiper=t()}(this,(function(){"use strict";return class{constructor(e,t={}){this.el=e,this.wrapper=e.querySelector(".swiper-wrapper"),this.slides=Array.from(e.querySelectorAll(".swiper-slide")),this.activeIndex=0,this.params=t,this.init()}init(){if(this.slides.length<=1)return;this.pagination=this.el.querySelector(".swiper-pagination");this.createDots();this.startX=0;this.currentX=0;this.isMoving=!1;this.el.addEventListener("touchstart",(e=>this.touchStart(e)),{passive:!0});this.el.addEventListener("touchmove",(e=>this.touchMove(e)),{passive:!0});this.el.addEventListener("touchend",(()=>this.touchEnd()))}createDots(){for(let e=0;e<this.slides.length;e++){const t=document.createElement("div");t.className="swiper-pagination-dot",0===e&&t.classList.add("active"),this.pagination.appendChild(t)}this.dots=Array.from(this.pagination.querySelectorAll(".swiper-pagination-dot"))}touchStart(e){this.startX=e.touches[0].clientX,this.isMoving=!0,this.wrapper.style.transition="none"}touchMove(e){if(!this.isMoving)return;this.currentX=e.touches[0].clientX;const t=this.currentX-this.startX,i=-this.activeIndex*this.el.offsetWidth+t;this.wrapper.style.transform=`translateX(${i}px)`}touchEnd(){if(!this.isMoving)return;this.isMoving=!1;const e=this.currentX-this.startX;Math.abs(e)>50?e>0?this.activeIndex>0&&this.activeIndex--:this.activeIndex<this.slides.length-1&&this.activeIndex++:this.params.loop&&(0===this.activeIndex&&e>0?this.activeIndex=this.slides.length-1:this.activeIndex===this.slides.length-1&&e<0&&(this.activeIndex=0)),this.updatePosition()}updatePosition(){const e=-this.activeIndex*100;this.wrapper.style.transform=`translateX(${e}%)`,this.wrapper.style.transition="transform 0.3s ease",this.updateDots()}updateDots(){this.dots.forEach(((e,t)=>t===this.activeIndex?e.classList.add("active"):e.classList.remove("active")))}}}));
   </script>
 </head>
 
@@ -152,8 +147,7 @@
   </div>
   
   <script>
-    // 💡 讀取你的 Google Apps Script API 網址
-    const gasUrl = "https://script.google.com/macros/s/AKfycbyCJC2Wl2_H50Z4gdilA--7FQ4Q742w06TcsqsvRZkYTFs_Lo0LDvPNTSZnQZRibVc/exec";
+    const gasUrl = "https://google.com";
     
     fetch(gasUrl)
       .then(response => response.json())
@@ -183,10 +177,11 @@
           slidesHtml += `<div class="swiper-slide"><img src="${imgUrl}" referrerpolicy="no-referrer" loading="lazy"></div>`;
         });
         
+        // 🛠️ 修正：HTML 移除了舊的箭頭按鈕，換上了乾淨的 swiper-pagination 圓點容器
         card.innerHTML = `
           <div class="swiper">
             <div class="swiper-wrapper">${slidesHtml}</div>
-            <div class="swiper-button-next"></div><div class="swiper-button-prev"></div>
+            <div class="swiper-pagination"></div>
           </div>
           <div class="product-info">
             <div class="product-name" title="${prod.name}">${prod.name}</div>
@@ -194,7 +189,7 @@
           </div>
         `;
         gallery.appendChild(card);
-        new Swiper(card.querySelector(".swiper"), { loop: true });
+        new Swiper(card.querySelector(".swiper"), { loop: false });
       });
     }
   </script>
