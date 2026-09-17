@@ -378,7 +378,7 @@
     }
 
     // 💡 需求單表單提交邏輯
-    function submitRequest() {
+   function submitRequest() {
   const userName = document.getElementById("requestUser").value.trim();
   const comment = document.getElementById("requestComment").value.trim();
   const fileInput = document.getElementById("requestImage");
@@ -401,80 +401,80 @@
   }
 
   submitBtn.disabled = true;
-  submitBtn.innerText = "傳送中...";
+  submitBtn.innerText = "上傳中...";
 
   if (file) {
-    compressImage(file, 1024, function(base64Data) {
-      sendDataToGAS(userName, comment, base64Data, file.name);
-    });
+    compressAndSend(file, userName, comment);
   } else {
     sendDataToGAS(userName, comment, null, null);
   }
 }
 
-// Canvas 圖片壓縮函數
-function compressImage(file, maxWidth, callback) {
+// 壓縮圖片並傳送
+function compressAndSend(file, userName, comment) {
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     const img = new Image();
-    img.onload = function() {
+    img.onload = function () {
+      const canvas = document.createElement("canvas");
       let width = img.width;
       let height = img.height;
+      const maxWidth = 1024; // 限制最大寬度
 
       if (width > maxWidth) {
         height = Math.round((height * maxWidth) / width);
         width = maxWidth;
       }
 
-      const canvas = document.createElement("canvas");
       canvas.width = width;
       canvas.height = height;
-
       const ctx = canvas.getContext("2d");
       ctx.drawImage(img, 0, 0, width, height);
 
-      const base64 = canvas.toDataURL("image/jpeg", 0.8);
-      callback(base64);
+      // 轉為輕量化的圖片數據傳給 GAS
+      const compressedData = canvas.toDataURL("image/jpeg", 0.8);
+      sendDataToGAS(userName, comment, compressedData, file.name);
     };
     img.src = e.target.result;
   };
   reader.readAsDataURL(file);
 }
-    function sendDataToGAS(userName, comment, fileData, fileName) {
-      const submitBtn = document.getElementById("submitBtn");
 
-      fetch(gasUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8"
-        },
-        body: JSON.stringify({
-          userName: userName,
-          comment: comment,
-          fileData: fileData,
-          fileName: fileName
-        })
-      })
-      .then(res => res.json())
-      .then(data => {
-        submitBtn.disabled = false;
-        submitBtn.innerText = "送出需求";
+function sendDataToGAS(userName, comment, fileData, fileName) {
+  const submitBtn = document.getElementById("submitBtn");
 
-        if (data.status === "success") {
-          alert("需求單已成功送出！");
-          document.getElementById("requestUser").value = "";
-          document.getElementById("requestComment").value = "";
-          document.getElementById("requestImage").value = "";
-        } else {
-          alert("送出失敗：" + data.message);
-        }
-      })
-      .catch(err => {
-        submitBtn.disabled = false;
-        submitBtn.innerText = "送出需求";
-        alert("發送失敗，請稍後再試。");
-      });
+  fetch(gasUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8"
+    },
+    body: JSON.stringify({
+      userName: userName,
+      comment: comment,
+      fileData: fileData,
+      fileName: fileName
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    submitBtn.disabled = false;
+    submitBtn.innerText = "送出需求";
+
+    if (data.status === "success") {
+      alert("需求單已成功送出！");
+      document.getElementById("requestUser").value = "";
+      document.getElementById("requestComment").value = "";
+      document.getElementById("requestImage").value = "";
+    } else {
+      alert("送出失敗：" + data.message);
     }
+  })
+  .catch(err => {
+    submitBtn.disabled = false;
+    submitBtn.innerText = "送出需求";
+    alert("發送失敗，請稍後再試。");
+  });
+}
   </script>
 </body>
 
