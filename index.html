@@ -17,19 +17,35 @@
     .tab-nav {
       display: flex;
       justify-content: center;
-      gap: 10px;
+      gap: 8px; /* 縮小按鈕之間的間距，騰出更多空間 */
       margin-bottom: 20px;
+      max-width: 600px; /* 與下方的表單卡片寬度保持一致 */
+      margin-left: auto;
+      margin-right: auto;
+      width: 100%;
+      box-sizing: border-box;
     }
+    /* 💡 分頁按鈕樣式：強制三欄等寬 + 字體自動適應大小 */
     .tab-btn {
+      flex: 1; /* 關鍵：強制三個按鈕 1:1:1 絕對等寬 */
       background: #ffffff;
       border: 1px solid #ddd;
-      padding: 8px 18px;
+      padding: 10px 4px; /* 固定上下高度，將左右 Padding 縮小，讓出最大空間給文字 */
       border-radius: 20px;
       font-size: 14px;
       font-weight: bold;
       color: #666;
       cursor: pointer;
       transition: all 0.3s ease;
+      text-align: center;
+      
+      /* 💡 核心優化：防止字體過大換行，強迫字體自動適應按鈕寬度 */
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: clip;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .tab-btn.active {
       background: #333;
@@ -47,11 +63,17 @@
       width: 100%;
     }
     
-    @media (min-width: 600px) {
-      .grid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 20px;
+    /* 💡 針對極小手機螢幕（如 iPhone SE）的字體微調，確保安全不擠壓 */
+    @media (max-width: 360px) {
+      .tab-btn {
+        font-size: 12px;
       }
+    }
+
+    .tab-btn.active {
+      background: #333;
+      color: #fff;
+      border-color: #333;
     }
     
     .product-card { 
@@ -458,25 +480,34 @@
     const gasUrl = "https://script.google.com/macros/s/AKfycbxBScEcs_RbX11hhe5Un5sCVCrR2cSNMcq78dSR8rzjsdgpbnuCergPJmkgLSFUPRuy/exec";
     
     // 💡 單一分頁切換函數
-    function switchTab(tabName) {
-      const galleryTab = document.getElementById('galleryTab');
-      const requestTab = document.getElementById('requestTab');
-      const pageTitle = document.getElementById('pageTitle');
-      const btns = document.querySelectorAll('.tab-btn');
+    // 💡 用這段全三頁邏輯，完全取代舊的 switchTab
+function switchTab(tabName) {
+  const galleryTab = document.getElementById('galleryTab');
+  const requestTab = document.getElementById('requestTab');
+  const aboutTab = document.getElementById('aboutTab'); // ➕ 新增讀取
+  const btns = document.querySelectorAll('.tab-nav .tab-btn');
 
-      btns.forEach(btn => btn.classList.remove('active'));
+  // 1. 先清除所有按鈕的 active 狀態
+  btns.forEach(btn => btn.classList.remove('active'));
 
-      if (tabName === 'gallery') {
-        galleryTab.style.display = 'block';
-        requestTab.style.display = 'none';
-        btns[0].classList.add('active');
-      } else {
-        galleryTab.style.display = 'none';
-        requestTab.style.display = 'block';
-        btns[1].classList.add('active');
-        fetchRequestList(); // 切換到許願池時自動載入清單
-      }
-    }
+  // 2. 隱藏所有分頁內容
+  galleryTab.style.display = 'none';
+  requestTab.style.display = 'none';
+  aboutTab.style.display = 'none';
+
+  // 3. 根據點擊的頁籤，顯示對應內容並亮起按鈕
+  if (tabName === 'gallery') {
+    galleryTab.style.display = 'block';
+    btns[0].classList.add('active');
+  } else if (tabName === 'request') {
+    requestTab.style.display = 'block';
+    btns[1].classList.add('active');
+    fetchRequestList(); // 切換到許願池時自動載入清單
+  } else if (tabName === 'about') {
+    aboutTab.style.display = 'block';
+    btns[2].classList.add('active'); // ➕ 亮起 About 按鈕
+  }
+}
 
     // 初始化骨架屏 (顯示 6 個預設骨架卡片)
     function renderSkeletons() {
