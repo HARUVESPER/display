@@ -460,7 +460,7 @@
     this.el.addEventListener("mousedown",(e=>{e.preventDefault();this.dragStart(e.clientX);window.addEventListener("mousemove",this.onMove);window.addEventListener("mouseup",this.onEnd)}));
     }
     createDots(){this.slides.forEach((e,t)=>{const i=document.createElement("div");i.className="swiper-pagination-dot",0===t&&i.classList.add("active");i.addEventListener("click",(e)=>{e.stopPropagation();this.activeIndex=t;this.updatePosition()});this.pagination.appendChild(i)});this.dots=Array.from(this.pagination.querySelectorAll(".swiper-pagination-dot"))}
-    dragStart(e){this.startX=e;this.isDown=!1;this.isMoving=!1;this.wrapper.style.transition="none"}
+    dragStart(e){this.startX=e;this.isDown=!0;this.isMoving=!1;this.wrapper.style.transition="none"}
     dragMove(e){this.currentX=e;const t=this.currentX-this.startX,i=-this.activeIndex*this.el.getBoundingClientRect().width+t;this.wrapper.style.transform=`translateX(${i}px)`}
     dragEnd(){window.removeEventListener("mousemove",this.onMove);window.removeEventListener("mouseup",this.onEnd);if(!this.isDown)return;this.isDown=!1;if(!this.isMoving){this.currentX=0;return}this.isMoving=!1;const e=this.currentX-this.startX;if(Math.abs(e)>40&&this.currentX!==0){if(e>0){if(this.activeIndex>0)this.activeIndex--}else{if(this.activeIndex<this.slides.length-1)this.activeIndex++}}this.updatePosition();this.currentX=0}
     updatePosition(){const e=-this.activeIndex*100;this.wrapper.style.transform=`translateX(${e}%)`,this.wrapper.style.transition="transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)",this.updateDots()}
@@ -530,7 +530,7 @@
         <div class="about-section-title">About</div>
         <p class="about-text">
           歡迎來到 HARUVESPER 的衣櫥！<br>
-          會盡力且用心完成每件作品, 但手工品無法做到每件一模一樣, 線頭及色差都有存在的, 需要您的理解<br>
+          會盡力且用心完成每件作品, 但手工品無法做到每件一模一樣, 線頭及色差都有存在的可能, 需要您的理解<br>
           若有特別在意的細節,請務必留言或私訊溝通
         </p>
       </div>
