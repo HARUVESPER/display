@@ -306,11 +306,6 @@
       object-fit: cover;
     }
 
-    .no-img-text {
-      font-size: 0.75rem;
-      color: #aaa;
-    }
-
     .request-info {
       flex-grow: 1;
     }
@@ -369,12 +364,12 @@
     <!-- 1. 折疊式提交需求表單 -->
     <details id="requestAccordion" class="request-accordion">
       <summary class="accordion-header">
-        <span>➕ 新增需求單</span>
+        <span>➕ 新增願望</span>
         <span class="accordion-icon">▼</span>
       </summary>
       <div class="accordion-content">
         <div class="form-group">
-          <label for="requestUser">您的稱呼 / 姓名 *</label>
+          <label for="requestUser">您的暱稱 *</label>
           <input type="text" id="requestUser" placeholder="例如：王小明" required>
         </div>
         <div class="form-group">
@@ -382,27 +377,27 @@
           <textarea id="requestComment" rows="3" placeholder="請輸入您想許願或尋找的衣服類型..."></textarea>
         </div>
         <div class="form-group">
-          <label for="requestImage">上傳參考圖片 (選填)</label>
+          <label for="requestImage">上傳參考圖片 (必填)</label>
           <input type="file" id="requestImage" accept="image/*">
         </div>
-        <button id="submitBtn" class="submit-btn" onclick="submitRequest()">送出需求</button>
+        <button id="submitBtn" class="submit-btn" onclick="submitRequest()">送出願望</button>
       </div>
     </details>
 
     <!-- 2. 下方需求列表區塊 -->
     <div class="request-list-container">
-      <h3 class="list-title">📋 需求清單</h3>
+      <h3 class="list-title">📋 願望清單</h3>
       <div id="requestList" class="request-list">
-        <div class="loading-msg">載入需求集中...</div>
+        <div class="loading-msg">讀取中...</div>
       </div>
     </div>
 
   </div>
 
   <script>
-    const gasUrl = "https://script.google.com/macros/s/AKfycbzBHW1qssmUJhjjfYvpsWrvu3mHfB6g1vDmG92qd8mYDz95YkW3b3bzjueV7ZEijX9n/exec";
+    const gasUrl = "https://script.google.com/macros/s/AKfycbwDEkkoG-3fELwnOuhkH8YoTaHuZNgAIpdllp75_G5WJlqU-Z_Db0Li4ewyvM_CGfqI/exec";
     
-    // 💡 修正後的單一分頁切換函數
+    // 💡 單一分頁切換函數
     function switchTab(tabName) {
       const galleryTab = document.getElementById('galleryTab');
       const requestTab = document.getElementById('requestTab');
@@ -492,7 +487,7 @@
     // 💡 抓取需求清單
     function fetchRequestList() {
       const container = document.getElementById('requestList');
-      container.innerHTML = '<div class="loading-msg">載入需求集中...</div>';
+      container.innerHTML = '<div class="loading-msg">載入中...</div>';
       
       fetch(gasUrl + "?action=getRequests")
         .then(res => res.json())
@@ -500,17 +495,17 @@
           renderRequestList(data);
         })
         .catch(err => {
-          container.innerHTML = '<div class="loading-msg">清單載入失敗</div>';
+          container.innerHTML = '<div class="loading-msg">願望讀取失敗</div>';
         });
     }
 
-    // 💡 渲染需求清單 (圖片 + 留言)
+    // 💡 渲染需求清單
     function renderRequestList(items) {
       const container = document.getElementById('requestList');
       container.innerHTML = '';
 
       if (!items || !Array.isArray(items) || items.length === 0) {
-        container.innerHTML = '<div class="loading-msg">目前還沒有人提交需求</div>';
+        container.innerHTML = '<div class="loading-msg">目前願望都已實現</div>';
         return;
       }
 
@@ -520,13 +515,11 @@
         div.className = 'request-item';
 
         const imgHtml = item.imageUrl 
-          ? `<img src="${item.imageUrl}" referrerpolicy="no-referrer" loading="lazy">`
-          : `<span class="no-img-text">無圖片</span>`;
+          ? `<div class="request-img-box"><img src="${item.imageUrl}" referrerpolicy="no-referrer" loading="lazy"></div>`
+          : '';
 
         div.innerHTML = `
-          <div class="request-img-box">
-            ${imgHtml}
-          </div>
+          ${imgHtml}
           <div class="request-info">
             <div class="request-user-name">${item.userName}</div>
             <div class="request-comment-text">${item.comment || '無留言內容'}</div>
@@ -616,7 +609,7 @@
       .then(res => res.json())
       .then(data => {
         submitBtn.disabled = false;
-        submitBtn.innerText = "送出需求";
+        submitBtn.innerText = "送出願望";
 
         if (data.status === "success") {
           alert("需求單已成功送出！");
@@ -633,7 +626,7 @@
       })
       .catch(err => {
         submitBtn.disabled = false;
-        submitBtn.innerText = "送出需求";
+        submitBtn.innerText = "送出願望";
         alert("發送失敗，請稍後再試。");
       });
     }
