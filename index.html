@@ -359,41 +359,30 @@
 }
   </style>
   <script>
+    // 🛠️ 終極修復版：完美滑動吸附 + 原版純淨圓點不改範圍
     !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):(e="undefined"!=typeof globalThis?globalThis:e||self).Swiper=t()}(this,(function(){"use strict";return class{constructor(e,t={}){this.el=e,this.wrapper=e.querySelector(".swiper-wrapper"),this.slides=Array.from(e.querySelectorAll(".swiper-slide")),this.activeIndex=0,this.params=t,this.init()}
-    init(){if(this.slides.length<=1)return;this.pagination=this.el.querySelector(".swiper-pagination");this.createDots();this.startX=0,this.currentX=0,this.isMoving=!1;
+    init(){if(this.slides.length<=1)return;this.pagination=this.el.querySelector(".swiper-pagination");this.createDots();this.startX=0,this.currentX=0,this.isDown=!1,this.isMoving=!1;
     this.onMove=e=>this.dragMove(e.clientX);this.onEnd=()=>this.dragEnd();
-    this.el.addEventListener("touchstart",(e=>this.dragStart(e.touches[0].clientX)),{passive:!0});
-    this.el.addEventListener("touchmove",(e=>this.dragMove(e.touches[0].clientX)),{passive:!0});
+    
+    // 💡 手機觸控：修正座標抓取與多指干擾
+    this.el.addEventListener("touchstart",(e=>{this.dragStart(e.touches[0].clientX);this.startY=e.touches[0].clientY;}),{passive:!0});
+    this.el.addEventListener("touchmove",(e=>{
+      if(!this.isDown)return;
+      const dx=e.touches[0].clientX-this.startX;
+      const dy=e.touches[0].clientY-this.startY;
+      if(!this.isMoving&&Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>8){this.isMoving=!0}
+      if(this.isMoving){if(e.cancelable)e.preventDefault();this.dragMove(e.touches[0].clientX);}
+    }),{passive:!1});
     this.el.addEventListener("touchend",(()=>this.dragEnd()));
-    this.el.addEventListener("mousedown",(e=>this.dragStart(e.clientX)))}
-    createDots() {
-  this.slides.forEach((e, t) => {
-    const i = document.createElement("div");
-    i.className = "swiper-pagination-dot";
     
-    // 如果是第一張圖，預設加上 active 類別
-    if (0 === t) i.classList.add("active");
-    
-    // 💡 為每個小圓點精準綁定點擊事件，切換至對應的 index (t)
-    i.addEventListener("click", (e) => {
-      e.stopPropagation(); // 阻止事件冒泡，避免干擾外層
-      this.activeIndex = t;
-      this.updatePosition(); // 更新圖片位移與圓點狀態
-    });
-    
-    this.pagination.appendChild(i);
-  });
-  
-  // 將產生的圓點收集成陣列，便於後續滑動時切換狀態
-  this.dots = Array.from(this.pagination.querySelectorAll(".swiper-pagination-dot"));
-}
-    dragStart(e){this.startX=e,this.isMoving=!1,this.wrapper.style.transition="none";
-    window.addEventListener("mousemove",this.onMove);window.addEventListener("mouseup",this.onEnd)}
-    dragMove(e){if(!this.isMoving)return;this.currentX=e;const t=this.currentX-this.startX,i=-this.activeIndex*this.el.offsetWidth+t;this.wrapper.style.transform=`translateX(${i}px)`}
-    dragEnd(){if(!this.isMoving)return;this.isMoving=!1;
-    window.removeEventListener("mousemove",this.onMove);window.removeEventListener("mouseup",this.onEnd);
-    const e=this.currentX-this.startX;Math.abs(e)>30&&this.currentX!==0?(e>0?this.activeIndex>0&&this.activeIndex--:this.activeIndex<this.slides.length-1&&this.activeIndex++):this.params.loop&&(0===this.activeIndex&&e>0?this.activeIndex=this.slides.length-1:this.activeIndex===this.slides.length-1&&e<0&&(this.activeIndex=0)),this.updatePosition(),this.currentX=0}
-    updatePosition(){const e=-this.activeIndex*100;this.wrapper.style.transform=`translateX(${e}%)`,this.wrapper.style.transition="transform 0.3s ease",this.updateDots()}
+    // 💡 電腦滑鼠：完整防護防止監聽器卡死
+    this.el.addEventListener("mousedown",(e=>{e.preventDefault();this.dragStart(e.clientX);window.addEventListener("mousemove",this.onMove);window.addEventListener("mouseup",this.onEnd)}));
+    }
+    createDots(){this.slides.forEach((e,t)=>{const i=document.createElement("div");i.className="swiper-pagination-dot",0===t&&i.classList.add("active");i.addEventListener("click",(e)=>{e.stopPropagation();this.activeIndex=t;this.updatePosition()});this.pagination.appendChild(i)});this.dots=Array.from(this.pagination.querySelectorAll(".swiper-pagination-dot"))}
+    dragStart(e){this.startX=e;this.isDown=!0;this.isMoving=!1;this.wrapper.style.transition="none"}
+    dragMove(e){this.currentX=e;const t=this.currentX-this.startX,i=-this.activeIndex*this.el.getBoundingClientRect().width+t;this.wrapper.style.transform=`translateX(${i}px)`}
+    dragEnd(){window.removeEventListener("mousemove",this.onMove);window.removeEventListener("mouseup",this.onEnd);if(!this.isDown)return;this.isDown=!1;if(!this.isMoving){this.currentX=0;return}this.isMoving=!1;const e=this.currentX-this.startX;if(Math.abs(e)>40&&this.currentX!==0){if(e>0){if(this.activeIndex>0)this.activeIndex--}else{if(this.activeIndex<this.slides.length-1)this.activeIndex++}}this.updatePosition();this.currentX=0}
+    updatePosition(){const e=-this.activeIndex*100;this.wrapper.style.transform=`translateX(${e}%)`,this.wrapper.style.transition="transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)",this.updateDots()}
     updateDots(){this.dots.forEach(((e,t)=>t===this.activeIndex?e.classList.add("active"):e.classList.remove("active")))}}}));
   </script>
 </head>
