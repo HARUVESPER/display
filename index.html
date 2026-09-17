@@ -13,6 +13,30 @@
     body { font-family: "Microsoft JhengHei", Arial, sans-serif; background: #f8f9fa; padding: 15px; margin: 0; }
     h2 { text-align: center; color: #333; margin-bottom: 20px; letter-spacing: 1px; font-size: 22px; }
     
+    /* 💡 分頁導覽列樣式 */
+    .tab-nav {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      background: #ffffff;
+      border: 1px solid #ddd;
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .tab-btn.active {
+      background: #333;
+      color: #fff;
+      border-color: #333;
+    }
+    
     .grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr); 
@@ -140,7 +164,7 @@
       .product-name { font-size: 16px; }
       .product-price { font-size: 14px; }
       .product-price::before { font-size: 12px; }
-      h2 { font-size: 28px; margin-bottom: 30px; }
+      h2 { font-size: 28px; margin-bottom: 20px; }
     }
 
     /* 骨架屏載入動畫 */
@@ -157,6 +181,60 @@
     }
 
     .loading-msg { text-align: center; font-size: 14px; color: #666; padding: 50px; grid-column: 1 / -1; }
+
+    /* 💡 需求單表單區域樣式 */
+    .form-container {
+      max-width: 500px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+      box-sizing: border-box;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 6px;
+    }
+    .form-group input[type="text"],
+    .form-group textarea,
+    .form-group input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+    .form-group textarea {
+      resize: vertical;
+    }
+    .submit-btn {
+      width: 100%;
+      background: #333;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .submit-btn:hover {
+      background: #555;
+    }
+    .submit-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
   </style>
   <script>
     !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):(e="undefined"!=typeof globalThis?globalThis:e||self).Swiper=t()}(this,(function(){"use strict";return class{constructor(e,t={}){this.el=e,this.wrapper=e.querySelector(".swiper-wrapper"),this.slides=Array.from(e.querySelectorAll(".swiper-slide")),this.activeIndex=0,this.params=t,this.init()}
@@ -167,7 +245,7 @@
     this.el.addEventListener("touchend",(()=>this.dragEnd()));
     this.el.addEventListener("mousedown",(e=>this.dragStart(e.clientX)))}
     createDots(){for(let e=0;e<this.slides.length;e++){const t=document.createElement("div");t.className="swiper-pagination-dot",0===e&&t.classList.add("active"),t.addEventListener("click",(t=>{t.stopPropagation(),this.activeIndex=e,this.updatePosition()})),this.pagination.appendChild(t)}this.dots=Array.from(this.pagination.querySelectorAll(".swiper-pagination-dot"))}
-    dragStart(e){this.startX=e,this.isMoving=!0,this.wrapper.style.transition="none";
+    dragStart(e){this.startX=e,this.isMoving=!1,this.wrapper.style.transition="none";
     window.addEventListener("mousemove",this.onMove);window.addEventListener("mouseup",this.onEnd)}
     dragMove(e){if(!this.isMoving)return;this.currentX=e;const t=this.currentX-this.startX,i=-this.activeIndex*this.el.offsetWidth+t;this.wrapper.style.transform=`translateX(${i}px)`}
     dragEnd(){if(!this.isMoving)return;this.isMoving=!1;
@@ -179,12 +257,63 @@
 </head>
 
 <body>
-  <h2>展示間</h2>
-  <div id="gallery" class="grid"></div>
+  <h2 id="pageTitle">展示間</h2>
+
+  <!-- 💡 分頁按鈕頁籤 -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('gallery')">展示間</button>
+    <button class="tab-btn" onclick="switchTab('request')">需求單</button>
+  </div>
+
+  <!-- 分頁 1：展示間 -->
+  <div id="galleryTab">
+    <div id="gallery" class="grid"></div>
+  </div>
+
+  <!-- 分頁 2：需求單 -->
+  <div id="requestTab" style="display: none;">
+    <div class="form-container">
+      <div class="form-group">
+        <label for="requestUser">提交人 / 稱呼 *</label>
+        <input type="text" id="requestUser" placeholder="例如：王小姐 / Line ID..." />
+      </div>
+      <div class="form-group">
+        <label for="requestComment">需求 / 留言</label>
+        <textarea id="requestComment" rows="4" placeholder="請輸入您的需求或說明..."></textarea>
+      </div>
+      <div class="form-group">
+        <label for="requestImage">上傳照片 (限制 2MB 以內)</label>
+        <input type="file" id="requestImage" accept="image/*" />
+      </div>
+      <button id="submitBtn" class="submit-btn" onclick="submitRequest()">送出需求</button>
+    </div>
+  </div>
 
   <script>
     const gasUrl = "https://script.google.com/macros/s/AKfycbxysftZq-hKGIom-DulnAmdg6e0isHgIDrAgyqNtgaUCJ79pOs815SY-fqypyTf7Nzh/exec";
     
+    // 💡 分頁切換功能
+    function switchTab(tabName) {
+      const galleryTab = document.getElementById('galleryTab');
+      const requestTab = document.getElementById('requestTab');
+      const pageTitle = document.getElementById('pageTitle');
+      const btns = document.querySelectorAll('.tab-btn');
+
+      btns.forEach(btn => btn.classList.remove('active'));
+
+      if (tabName === 'gallery') {
+        galleryTab.style.display = 'block';
+        requestTab.style.display = 'none';
+        pageTitle.innerText = '展示間';
+        btns[0].classList.add('active');
+      } else {
+        galleryTab.style.display = 'none';
+        requestTab.style.display = 'block';
+        pageTitle.innerText = '提交需求單';
+        btns[1].classList.add('active');
+      }
+    }
+
     // 初始化骨架屏 (顯示 6 個預設骨架卡片)
     function renderSkeletons() {
       const gallery = document.getElementById('gallery');
@@ -245,6 +374,81 @@
         `;
         gallery.appendChild(card);
         new Swiper(card.querySelector(".swiper"), { loop: false });
+      });
+    }
+
+    // 💡 需求單表單提交邏輯
+    function submitRequest() {
+      const userName = document.getElementById("requestUser").value.trim();
+      const comment = document.getElementById("requestComment").value.trim();
+      const fileInput = document.getElementById("requestImage");
+      const submitBtn = document.getElementById("submitBtn");
+      const file = fileInput.files[0];
+
+      if (!userName) {
+        alert("請填寫您的提交人 / 稱呼！");
+        return;
+      }
+
+      if (!comment && !file) {
+        alert("請至少輸入需求留言或選擇一張圖片！");
+        return;
+      }
+
+      // 檢查圖片大小限制 (2MB)
+      if (file && file.size > 2 * 1024 * 1024) {
+        alert("圖片檔案過大，請選擇 2MB 以內的照片！");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerText = "傳送中...";
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const base64Data = e.target.result;
+          sendDataToGAS(userName, comment, base64Data, file.name);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        sendDataToGAS(userName, comment, null, null);
+      }
+    }
+
+    function sendDataToGAS(userName, comment, fileData, fileName) {
+      const submitBtn = document.getElementById("submitBtn");
+
+      fetch(gasUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify({
+          userName: userName,
+          comment: comment,
+          fileData: fileData,
+          fileName: fileName
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "送出需求";
+
+        if (data.status === "success") {
+          alert("需求單已成功送出！");
+          document.getElementById("requestUser").value = "";
+          document.getElementById("requestComment").value = "";
+          document.getElementById("requestImage").value = "";
+        } else {
+          alert("送出失敗：" + data.message);
+        }
+      })
+      .catch(err => {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "送出需求";
+        alert("發送失敗，請稍後再試。");
       });
     }
   </script>
