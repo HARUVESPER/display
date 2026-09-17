@@ -13,82 +13,45 @@
     body { font-family: "Microsoft JhengHei", Arial, sans-serif; background: #f8f9fa; padding: 15px; margin: 0; }
     h2 { text-align: center; color: #333; margin-bottom: 20px; letter-spacing: 1px; font-size: 22px; }
     
-   /* 💡 分頁導覽列：手機滿版方便點選，大螢幕強迫收縮在中央，絕不填滿畫面 */
+    /* 💡 分頁導覽列樣式 */
     .tab-nav {
       display: flex;
       justify-content: center;
-      gap: 8px; 
-      margin-bottom: 24px;
-      width: 100%;
-      max-width: 100%; /* 手機版預設滿版 */
-      margin-left: auto;
-      margin-right: auto;
-      box-sizing: border-box;
-      padding: 0 4px;
+      gap: 10px;
+      margin-bottom: 20px;
     }
-    /* 💡 核心修正：大螢幕（電腦/平板）下，限制按鈕欄的總寬度，讓它精緻適中 */
-    @media (min-width: 600px) {
-      .tab-nav {
-        max-width: 360px; /* 💡 關鍵設定：限制整條按鈕欄寬度，使其集中在中央，不隨網頁拉寬 */
-      }
-    }
-  /* 💡 分頁按鈕：三個按鈕絕對等寬，字體稍微調小（13px）以利精確塞入不換行 */
-    .tab-nav .tab-btn {
-      flex: 1; /* 強制三個按鈕 1:1:1 絕對等寬 */
+    .tab-btn {
       background: #ffffff;
       border: 1px solid #ddd;
-      padding: 9px 4px; /* 精緻的上下高度 */
+      padding: 8px 18px;
       border-radius: 20px;
-      font-size: 13px; /* 💡 稍微縮小字體，確保在中英文下都能完美適應 */
+      font-size: 14px;
       font-weight: bold;
       color: #666;
       cursor: pointer;
-      transition: all 0.2s ease;
-      text-align: center;
-      white-space: nowrap; /* 強制不換行 */
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      transition: all 0.3s ease;
     }
-
-    /* 針對寬度特別窄的手機（如舊款 SE）再微調字體 */
-    @media (max-width: 340px) {
-      .tab-nav .tab-btn {
-        font-size: 11px;
-      }
+    .tab-btn.active {
+      background: #333;
+      color: #fff;
+      border-color: #333;
     }
     
-    /* 💡 網格容器：手機維持最完美的 2 欄 */
     .grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr); /* 手機版：絕對對稱 2 欄 */
+      grid-template-columns: repeat(2, 1fr); 
       gap: 12px; 
-      max-width: 1200px; /* 限制網頁最大總寬度，防止無限拉大 */
+      max-width: 1200px;
       margin: 0 auto;
       box-sizing: border-box;
       width: 100%;
     }
     
-    /* 💡 核心修正：大螢幕（平板與電腦）下的專屬排版 */
     @media (min-width: 600px) {
       .grid {
-        /* 1. 關鍵解除：覆寫掉手機的兩欄限制，改為由基礎寬度自動塞滿欄位 */
-        /* 2. 鎖定寬度：設定 220px 確保維持您原本最滿意、最剛好的卡片大小（大螢幕會自動排成 4 欄、5 欄甚至 6 欄） */
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 20px; /* 拉開電腦版卡片間距 */
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 20px;
       }
-
-    .tab-nav .tab-btn.active {
-      background: #333;
-      color: #fff;
-      border-color: #333;
-    }
-
-    .tab-btn.active {
-      background: #333;
-      color: #fff;
-      border-color: #333;
     }
     
     .product-card { 
@@ -103,16 +66,19 @@
       overflow: hidden;
     }
 
-    .swiper { 
-        /* 3. 完美維持 3:4 比例，高度隨寬度自適應，卡片絕對不會再橫向變形變寬 */
-        aspect-ratio: 3 / 4 !important; 
-        height: auto !important; 
-      }
-
-      .product-card { 
-        padding: 12px; /* 電腦版維持精緻的留白距離 */
-        border-radius: 16px; 
-      }
+    .swiper {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      height: auto; 
+      border-radius: 8px;
+      background: #f0f0f0; 
+      cursor: grab;
+      position: relative;
+      overflow: hidden;
+      list-style: none;
+      padding: 0;
+      z-index: 1;
+      user-select: none;
     }
     .swiper:active { cursor: grabbing; }
 
@@ -426,7 +392,6 @@
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('gallery')">展示間</button>
     <button class="tab-btn" onclick="switchTab('request')">許願池</button>
-    <button class="tab-btn" onclick="switchTab('aboutTab')">About HARUVESPER</button>
   </div>
 
   <!-- 分頁 1：展示間 -->
@@ -469,57 +434,28 @@
     </div>
 
   </div>
-  <!-- 分頁 3：about -->
-<div id="aboutTab" style="display: none; max-width: 600px; margin: 0 auto; padding: 10px; box-sizing: border-box;">
-  <div style="background: white; border-radius: 16px; padding: 25px; box-shadow: 0 2px 15px rgba(0,0,0,0.04); text-align: center;">
-       
-    <p style="margin: 0 0 20px 0; color: #666; font-size: 14px; line-height: 1.6; text-align: left;">
-      歡迎來到HARUVESPER展示間！<br><br>
-      因為每日時間有限，設立此平台方便關心目前生產進度 & 許願。<br>
-      手工品無法達到完美，但會用心且盡力製作，感謝包容。<br>
-      如有任何需要溝通或售後，可以 +IG 私訊，會盡快回覆。
-    </p>
-    
-    <!-- 📸 社群連結區塊 -->
-    <h4 style="margin: 0 0 12px 0; color: #444; font-size: 14px;">與我聯繫</h4>
-    <a href="https://www.instagram.com/haru.vesper" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: white; text-decoration: none; padding: 10px 24px; border-radius: 25px; font-size: 14px; font-weight: bold; box-shadow: 0 4px 12px rgba(220, 39, 67, 0.25); transition: transform 0.2s;">
-      <span>📸 Follow Instagram</span>
-    </a>
-  </div>
-</div>
+
   <script>
     const gasUrl = "https://script.google.com/macros/s/AKfycbxBScEcs_RbX11hhe5Un5sCVCrR2cSNMcq78dSR8rzjsdgpbnuCergPJmkgLSFUPRuy/exec";
     
     // 💡 單一分頁切換函數
-    // 💡 用這段全三頁邏輯，完全取代舊的 switchTab
-// 💡 完美修復版：精確亮起對應按鈕，解決 classList.add 報錯導致顯示不出來的問題
     function switchTab(tabName) {
       const galleryTab = document.getElementById('galleryTab');
       const requestTab = document.getElementById('requestTab');
-      const aboutTab = document.getElementById('aboutTab');
-      const btns = document.querySelectorAll('.tab-nav .tab-btn');
+      const pageTitle = document.getElementById('pageTitle');
+      const btns = document.querySelectorAll('.tab-btn');
 
-      // 1. 先清除導覽列內所有按鈕的 active 狀態
-      if (btns) {
-        btns.forEach(btn => btn.classList.remove('active'));
-      }
+      btns.forEach(btn => btn.classList.remove('active'));
 
-      // 2. 隱藏所有分頁內容
-      if (galleryTab) galleryTab.style.display = 'none';
-      if (requestTab) requestTab.style.display = 'none';
-      if (aboutTab) aboutTab.style.display = 'none';
-
-      // 3. 根據點擊的頁籤，顯示對應內容並精確亮起正確的按鈕
       if (tabName === 'gallery') {
-        if (galleryTab) galleryTab.style.display = 'block';
-        if (btns && btns[0]) btns[0].classList.add('active'); // 亮起第1個按鈕
-      } else if (tabName === 'request') {
-        if (requestTab) requestTab.style.display = 'block';
-        if (btns && btns[1]) btns[1].classList.add('active'); // 亮起第2個按鈕
+        galleryTab.style.display = 'block';
+        requestTab.style.display = 'none';
+        btns[0].classList.add('active');
+      } else {
+        galleryTab.style.display = 'none';
+        requestTab.style.display = 'block';
+        btns[1].classList.add('active');
         fetchRequestList(); // 切換到許願池時自動載入清單
-      } else if (tabName === 'about') {
-        if (aboutTab) aboutTab.style.display = 'block';
-        if (btns && btns[2]) btns[2].classList.add('active'); // 亮起第3個按鈕
       }
     }
 
