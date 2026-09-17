@@ -92,31 +92,32 @@
       pointer-events: none;
     }
 
-    .swiper-pagination {
-      position: absolute;
-      bottom: 8px;
-      left: 0;
-      width: 100%;
-      z-index: 10;
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-    }
+   .swiper-pagination {
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
 
-    .swiper-pagination-dot {
-      width: 6px;
-      height: 6px;
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 50%;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.3s;
-    }
+/* 小圓點基本樣式（維持 6px 純淨大小，絕不增加點擊範圍） */
+.swiper-pagination-dot {
+  width: 6px;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.3s;
+}
 
-    .swiper-pagination-dot.active {
-      background: rgba(0, 0, 0, 0.65);
-      transform: scale(1.1);
-    }
-
+/* 當前選中圖片的圓點：顏色加深並微幅放大增強視覺感 */
+.swiper-pagination-dot.active {
+  background: rgba(0, 0, 0, 0.65);
+  transform: scale(1.15);
+}
     @media (min-width: 600px) {
       .swiper { aspect-ratio: auto; height: 300px; }
       .product-card { padding: 15px; border-radius: 16px; }
@@ -365,7 +366,27 @@
     this.el.addEventListener("touchmove",(e=>this.dragMove(e.touches[0].clientX)),{passive:!0});
     this.el.addEventListener("touchend",(()=>this.dragEnd()));
     this.el.addEventListener("mousedown",(e=>this.dragStart(e.clientX)))}
-    createDots(){for(let e=0;e<this.slides.length;e++){const t=document.createElement("div");t.className="swiper-pagination-dot",0===e&&t.classList.add("active"),t.addEventListener("click",(t=>{t.stopPropagation(),this.activeIndex=e,this.updatePosition()})),this.pagination.appendChild(t)}this.dots=Array.from(this.pagination.querySelectorAll(".swiper-pagination-dot"))}
+    createDots() {
+  this.slides.forEach((e, t) => {
+    const i = document.createElement("div");
+    i.className = "swiper-pagination-dot";
+    
+    // 如果是第一張圖，預設加上 active 類別
+    if (0 === t) i.classList.add("active");
+    
+    // 💡 為每個小圓點精準綁定點擊事件，切換至對應的 index (t)
+    i.addEventListener("click", (e) => {
+      e.stopPropagation(); // 阻止事件冒泡，避免干擾外層
+      this.activeIndex = t;
+      this.updatePosition(); // 更新圖片位移與圓點狀態
+    });
+    
+    this.pagination.appendChild(i);
+  });
+  
+  // 將產生的圓點收集成陣列，便於後續滑動時切換狀態
+  this.dots = Array.from(this.pagination.querySelectorAll(".swiper-pagination-dot"));
+}
     dragStart(e){this.startX=e,this.isMoving=!1,this.wrapper.style.transition="none";
     window.addEventListener("mousemove",this.onMove);window.addEventListener("mouseup",this.onEnd)}
     dragMove(e){if(!this.isMoving)return;this.currentX=e;const t=this.currentX-this.startX,i=-this.activeIndex*this.el.offsetWidth+t;this.wrapper.style.transform=`translateX(${i}px)`}
