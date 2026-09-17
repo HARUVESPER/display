@@ -8,40 +8,8 @@
   <meta name="referrer" content="no-referrer"> 
   <title>HARUVESPER衣櫥展示</title>
   <style>
-    .swiper { margin: auto; position: relative; overflow: hidden; list-style: none; padding: 0; z-index: 1; display: block }
-    .swiper-wrapper { position: relative; width: 100%; height: 100%; z-index: 1; display: flex; transition-property: transform; box-sizing: content-box }
-    .swiper-slide { flex-shrink: 0; width: 100%; height: 100%; position: relative; display: block }
-    
-    /* 🛠️ 新增：小圓點容器（固定在圖片底部中央） */
-    .swiper-pagination {
-      position: absolute;
-      bottom: 8px;
-      left: 0;
-      width: 100%;
-      z-index: 10;
-      display: flex;
-      justify-content: center;
-      gap: 5px;
-      pointer-events: none; /* 點擊穿透，不干擾手勢 */
-    }
-
-    /* 🛠️ 新增：小圓點基本樣式 */
-    .swiper-pagination-dot {
-      width: 6px;
-      height: 6px;
-      background: rgba(0, 0, 0, 0.25);
-      border-radius: 50%;
-      transition: background 0.3s, transform 0.3s;
-    }
-
-    /* 🛠️ 新增：當前選中圖片的圓點樣式（變深、稍微放大增強視覺） */
-    .swiper-pagination-dot.active {
-      background: rgba(0, 0, 0, 0.7);
-      transform: scale(1.1);
-    }
-    
-    body { font-family: "Microsoft JhengHei", Arial, sans-serif; background: #f8f9fa; padding: 15px; margin: 0; }
-    h2 { text-align: center; color: #333; margin-bottom: 20px; letter-spacing: 1px; font-size: 22px; }
+    body { font-family: "Microsoft JhengHei", Arial, sans-serif; background: #f8f9fa; padding: 12px; margin: 0; box-sizing: border-box; }
+    h2 { text-align: center; color: #333; margin-top: 10px; margin-bottom: 20px; letter-spacing: 1px; font-size: 22px; }
     
     .grid {
       display: grid;
@@ -49,12 +17,13 @@
       gap: 12px; 
       max-width: 1200px;
       margin: 0 auto;
+      width: 100%;
       box-sizing: border-box;
     }
     
     @media (min-width: 600px) {
       .grid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 20px;
       }
     }
@@ -66,37 +35,71 @@
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04); 
       display: flex; 
       flex-direction: column; 
-      box-sizing: border-box; 
+      box-sizing: border-box;
+      width: 100%; /* 確保撐滿網格，達成絕對等寬 */
     }
     
-    .swiper {
+    .swiper { 
       width: 100%;
       aspect-ratio: 3 / 4;
       height: auto; 
       border-radius: 8px;
       background: #ffffff; 
+      position: relative; 
+      overflow: hidden; 
+      list-style: none; 
+      padding: 0; 
+      z-index: 1; 
+      display: block;
+      cursor: grab;
+    }
+    .swiper:active { cursor: grabbing; }
+    
+    .swiper-wrapper { position: relative; width: 100%; height: 100%; z-index: 1; display: flex; transition-property: transform; box-sizing: content-box; }
+    .swiper-slide { flex-shrink: 0; width: 100%; height: 100%; position: relative; display: block; user-select: none; }
+    .swiper-slide img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+
+    /* 🛠️ 小圓點容器 */
+    .swiper-pagination {
+      position: absolute;
+      bottom: 8px;
+      left: 0;
+      width: 100%;
+      z-index: 10;
+      display: flex;
+      justify-content: center;
+      gap: 6px;
     }
 
-    .swiper-slide img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain; 
+    /* 🛠️ 小圓點基本樣式（開啟指標事件允許點選） */
+    .swiper-pagination-dot {
+      width: 8px;
+      height: 8px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 50%;
+      transition: background 0.3s, transform 0.3s;
+      cursor: pointer;
+      pointer-events: auto; 
+    }
+
+    .swiper-pagination-dot.active {
+      background: rgba(0, 0, 0, 0.7);
+      transform: scale(1.1);
     }
 
     @media (min-width: 600px) {
-      .swiper {
-        aspect-ratio: auto;
-        height: 300px; 
-      }
-      .product-card { padding: 15px; border-radius: 16px; }
+      .swiper { aspect-ratio: auto; height: 300px; }
+      .product-card { padding: 12px; border-radius: 16px; }
     }
     
+    /* 🛠️ 修正：調整內縮，讓文字跟上方的圖片邊緣左右完美對齊 */
     .product-info {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      padding-top: 10px;
+      padding: 10px 2px 4px 2px; 
       gap: 6px;
+      box-sizing: border-box;
     }
     
     .product-name {
@@ -121,22 +124,29 @@
     }
 
     .product-price::before {
-      content: "$";
+      content: "\$";
       font-size: 10px;
       margin-right: 1px;
     }
 
     @media (min-width: 600px) {
-      .product-name { font-size: 16px; }
+      .product-name { font-size: 15px; }
       .product-price { font-size: 14px; }
-      .product-price::before { font-size: 12px; }
-      h2 { font-size: 28px; margin-bottom: 30px; }
+      .product-price::before { font-size: 11px; }
+      h2 { font-size: 26px; margin-bottom: 25px; }
+      .product-info { padding: 12px 4px 4px 4px; }
     }
     .loading { text-align: center; font-size: 14px; color: #666; padding: 50px; grid-column: 1 / -1; }
   </style>
   <script>
-    // 🛠️ 升級版極簡 Swiper：支援手勢左右滑動，並會自動同步更新下方的小圓點狀態
-    !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):(e="undefined"!=typeof globalThis?globalThis:e||self).Swiper=t()}(this,(function(){"use strict";return class{constructor(e,t={}){this.el=e,this.wrapper=e.querySelector(".swiper-wrapper"),this.slides=Array.from(e.querySelectorAll(".swiper-slide")),this.activeIndex=0,this.params=t,this.init()}init(){if(this.slides.length<=1)return;this.pagination=this.el.querySelector(".swiper-pagination");this.createDots();this.startX=0;this.currentX=0;this.isMoving=!1;this.el.addEventListener("touchstart",(e=>this.touchStart(e)),{passive:!0});this.el.addEventListener("touchmove",(e=>this.touchMove(e)),{passive:!0});this.el.addEventListener("touchend",(()=>this.touchEnd()))}createDots(){for(let e=0;e<this.slides.length;e++){const t=document.createElement("div");t.className="swiper-pagination-dot",0===e&&t.classList.add("active"),this.pagination.appendChild(t)}this.dots=Array.from(this.pagination.querySelectorAll(".swiper-pagination-dot"))}touchStart(e){this.startX=e.touches[0].clientX,this.isMoving=!0,this.wrapper.style.transition="none"}touchMove(e){if(!this.isMoving)return;this.currentX=e.touches[0].clientX;const t=this.currentX-this.startX,i=-this.activeIndex*this.el.offsetWidth+t;this.wrapper.style.transform=`translateX(${i}px)`}touchEnd(){if(!this.isMoving)return;this.isMoving=!1;const e=this.currentX-this.startX;Math.abs(e)>50?e>0?this.activeIndex>0&&this.activeIndex--:this.activeIndex<this.slides.length-1&&this.activeIndex++:this.params.loop&&(0===this.activeIndex&&e>0?this.activeIndex=this.slides.length-1:this.activeIndex===this.slides.length-1&&e<0&&(this.activeIndex=0)),this.updatePosition()}updatePosition(){const e=-this.activeIndex*100;this.wrapper.style.transform=`translateX(${e}%)`,this.wrapper.style.transition="transform 0.3s ease",this.updateDots()}updateDots(){this.dots.forEach(((e,t)=>t===this.activeIndex?e.classList.add("active"):e.classList.remove("active")))}}}));
+    // 🛠️ 終極 Swiper：全面支援「手機觸控」+「電腦滑鼠拖曳」+「圓點點擊」
+    !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):(e="undefined"!=typeof globalThis?globalThis:e||self).Swiper=t()}(this,(function(){"use strict";return class{constructor(e,t={}){this.el=e;this.wrapper=e.querySelector(".swiper-wrapper");this.slides=Array.from(e.querySelectorAll(".swiper-slide"));this.activeIndex=0;this.params=t;this.init()}init(){if(this.slides.length<=1)return;this.pagination=this.el.querySelector(".swiper-pagination");this.createDots();this.startX=0;this.currentX=0;this.isMoving=!1;
+    // 綁定觸控事件
+    this.el.addEventListener("touchstart",(e=>this.touchStart(e.touches[0])),{passive:!0});this.el.addEventListener("touchmove",(e=>this.touchMove(e,e.touches[0])),{passive:!1});this.el.addEventListener("touchend",(()=>this.touchEnd()));
+    // 綁定滑鼠事件
+    this.el.addEventListener("mousedown",(e=>this.touchStart(e)));window.addEventListener("mousemove",(e=>this.touchMove(e,e)));window.addEventListener("mouseup",(()=>this.touchEnd()))}createDots(){for(let e=0;e<this.slides.length;e++){const t=document.createElement("div");t.className="swiper-pagination-dot",0===e&&t.classList.add("active");
+    // 點擊圓點切換圖片
+    t.addEventListener("click",(e=>{e.stopPropagation();this.activeIndex=e;this.updatePosition()}));this.pagination.appendChild(t)}this.dots=Array.from(this.pagination.querySelectorAll(".swiper-pagination-dot"))}touchStart(e){this.startX=e.clientX;this.startY=e.clientY;this.isDown=!0;this.isMoving=!1;this.wrapper.style.transition="none"}touchMove(e,t){if(!this.isDown)return;this.currentX=t.clientX;const i=t.clientY;const dx=this.currentX-this.startX;const dy=i-this.startY;if(!this.isMoving){if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>5){this.isMoving=!0}}if(!this.isMoving)return;if(e.cancelable)e.preventDefault();const s=-this.activeIndex*this.el.getBoundingClientRect().width+dx;this.wrapper.style.transform=`translateX(${s}px)`}touchEnd(){if(!this.isDown)return;this.isDown=!1;if(!this.isMoving)return;this.isMoving=!1;const e=this.currentX-this.startX;if(Math.abs(e)>40){if(e>0){if(this.activeIndex>0)this.activeIndex--}else{if(this.activeIndex<this.slides.length-1)this.activeIndex++}}this.updatePosition()}updatePosition(){const e=-this.activeIndex*100;this.wrapper.style.transform=`translateX(${e}%)`;this.wrapper.style.transition="transform 0.3s ease";this.updateDots()}updateDots(){this.dots.forEach(((e,t)=>t===this.activeIndex?e.classList.add("active"):e.classList.remove("active")))}}}));
   </script>
 </head>
 
@@ -147,7 +157,7 @@
   </div>
   
   <script>
-    const gasUrl = "https://script.google.com/macros/s/AKfycbx0Zpyn3BVn3WPNR8M54NgRKE_5PyaHpbidMGukY-l3F3YowD75QlrHpw--jW5kDW4/exec";
+    const gasUrl = "https://script.google.com/macros/s/AKfycby93zjiXVaz_UKi-4uEay94AbAXeWbFHYtELd0RSJt7D4a2TwxqkLEb8LtGLFLu46Y/exec";
     
     fetch(gasUrl)
       .then(response => response.json())
@@ -177,7 +187,6 @@
           slidesHtml += `<div class="swiper-slide"><img src="${imgUrl}" referrerpolicy="no-referrer" loading="lazy"></div>`;
         });
         
-        // 🛠️ 修正：HTML 移除了舊的箭頭按鈕，換上了乾淨的 swiper-pagination 圓點容器
         card.innerHTML = `
           <div class="swiper">
             <div class="swiper-wrapper">${slidesHtml}</div>
@@ -189,7 +198,10 @@
           </div>
         `;
         gallery.appendChild(card);
-        new Swiper(card.querySelector(".swiper"), { loop: false });
+        
+        requestAnimationFrame(() => {
+          new Swiper(card.querySelector(".swiper"), { loop: false });
+        });
       });
     }
   </script>
