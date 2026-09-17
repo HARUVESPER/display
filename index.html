@@ -354,9 +354,7 @@
 </head>
 
 <body>
-  <h2 id="pageTitle">展示間</h2>
-
-  <!-- 💡 分頁按鈕頁籤 -->
+   <!-- 💡 分頁按鈕頁籤 -->
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('gallery')">展示間</button>
     <button class="tab-btn" onclick="switchTab('request')">許願池</button>
@@ -378,12 +376,12 @@
     </summary>
     <div class="accordion-content">
       <div class="form-group">
-        <label for="requestUser">您的稱呼 / 姓名 *</label>
+        <label for="requestUser">您的暱稱*</label>
         <input type="text" id="requestUser" placeholder="例如：王小明" required>
       </div>
       <div class="form-group">
         <label for="requestComment">需求描述 / 留言</label>
-        <textarea id="requestComment" rows="3" placeholder="請輸入您想許願或尋找的衣服類型..."></textarea>
+        <textarea id="requestComment" rows="3" placeholder="請輸入您想許願的樣式貨顏色&件數..."></textarea>
       </div>
       <div class="form-group">
         <label for="requestImage">上傳參考圖片 (選填)</label>
@@ -395,9 +393,9 @@
 
   <!-- 2. 下方需求列表區塊 -->
   <div class="request-list-container">
-    <h3 class="list-title">📋 需求清單</h3>
+    <h3 class="list-title">📋 願望清單</h3>
     <div id="requestList" class="request-list">
-      <div class="loading-msg">載入需求集中...</div>
+      <div class="loading-msg">載入中...</div>
     </div>
   </div>
 
