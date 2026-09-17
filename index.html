@@ -276,17 +276,19 @@
       color: #333;
     }
 
-    .request-item {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      background: #fff;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #eee;
-      margin-bottom: 10px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-    }
+    /* 💡 將需求卡片設為相對定位，以便右上角定位 */
+.request-item {
+  position: relative; /* 關鍵：讓內部的右上角定位生效 */
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: #fff;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
 
     .request-img-box {
       width: 70px;
@@ -323,20 +325,37 @@
       line-height: 1.4;
       word-break: break-all;
     }
-    /* 標籤基礎樣式 */
+    /* 💡 右上角彩色膠囊標籤（Badge） */
 .status-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  font-size: 12px;
-  border-radius: 12px;
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  padding: 3px 10px;
+  font-size: 11px;
   font-weight: bold;
-  margin-left: 8px;
+  border-radius: 20px;
+  line-height: 1.2;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
-/* 各個狀態的顏色變化 */
-.status-願望已收到 { background-color: #e0e0e0; color: #666; }
-.status-製作中 { background-color: #fff3cd; color: #856404; }
-.status-已完成 { background-color: #d4edda; color: #155724; }
+/* 💡 各狀態的繽紛彩色樣式 */
+.status-收到 {
+  background-color: #e9ecef;
+  color: #495057;
+  border: 1px solid #ced4da;
+}
+
+.status-製作中 {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+}
+
+.status-已完成待更新衣櫃 {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
   </style>
   <script>
     !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):(e="undefined"!=typeof globalThis?globalThis:e||self).Swiper=t()}(this,(function(){"use strict";return class{constructor(e,t={}){this.el=e,this.wrapper=e.querySelector(".swiper-wrapper"),this.slides=Array.from(e.querySelectorAll(".swiper-slide")),this.activeIndex=0,this.params=t,this.init()}
