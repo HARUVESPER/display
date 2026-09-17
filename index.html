@@ -13,24 +13,24 @@
     body { font-family: "Microsoft JhengHei", Arial, sans-serif; background: #f8f9fa; padding: 15px; margin: 0; }
     h2 { text-align: center; color: #333; margin-bottom: 20px; letter-spacing: 1px; font-size: 22px; }
     
-    /* 💡 分頁導覽列樣式 */
+    /* 💡 分頁導覽列：強制平分寬度，但與產品卡片完全隔離 */
     .tab-nav {
       display: flex;
       justify-content: center;
-      gap: 8px; /* 縮小按鈕之間的間距，騰出更多空間 */
+      gap: 8px; 
       margin-bottom: 20px;
-      max-width: 600px; /* 與下方的表單卡片寬度保持一致 */
+      max-width: 600px; 
       margin-left: auto;
       margin-right: auto;
       width: 100%;
       box-sizing: border-box;
     }
-    /* 💡 分頁按鈕樣式：強制三欄等寬 + 字體自動適應大小 */
-    .tab-btn {
-      flex: 1; /* 關鍵：強制三個按鈕 1:1:1 絕對等寬 */
+   /* 💡 分頁按鈕：三個按鈕絕對等寬，且字體自動適應大小不換行 */
+    .tab-nav .tab-btn {
+      flex: 1; /* 強制三個按鈕 1:1:1 絕對等寬 */
       background: #ffffff;
       border: 1px solid #ddd;
-      padding: 10px 4px; /* 固定上下高度，將左右 Padding 縮小，讓出最大空間給文字 */
+      padding: 10px 4px; 
       border-radius: 20px;
       font-size: 14px;
       font-weight: bold;
@@ -38,11 +38,8 @@
       cursor: pointer;
       transition: all 0.3s ease;
       text-align: center;
-      
-      /* 💡 核心優化：防止字體過大換行，強迫字體自動適應按鈕寬度 */
       white-space: nowrap;
       overflow: hidden;
-      text-overflow: clip;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -63,11 +60,16 @@
       width: 100%;
     }
     
-    /* 💡 針對極小手機螢幕（如 iPhone SE）的字體微調，確保安全不擠壓 */
     @media (max-width: 360px) {
-      .tab-btn {
+      .tab-nav .tab-btn {
         font-size: 12px;
       }
+    }
+
+    .tab-nav .tab-btn.active {
+      background: #333;
+      color: #fff;
+      border-color: #333;
     }
 
     .tab-btn.active {
@@ -414,7 +416,7 @@
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('gallery')">展示間</button>
     <button class="tab-btn" onclick="switchTab('request')">許願池</button>
-    <button class="tab-btn" onclick="switchTab('request')">About HARUVESPER</button>
+    <button class="tab-btn" onclick="switchTab('aboutTab')">About HARUVESPER</button>
   </div>
 
   <!-- 分頁 1：展示間 -->
@@ -457,11 +459,11 @@
     </div>
 
   </div>
+  
 <!-- ➕ 新增分頁 3：About HARUVESPER -->
 <div id="aboutTab" style="display: none; max-width: 600px; margin: 0 auto; padding: 10px; box-sizing: border-box;">
   <div style="background: white; border-radius: 16px; padding: 25px; box-shadow: 0 2px 15px rgba(0,0,0,0.04); text-align: center;">
        
-    <h3 style="margin: 0 0 10px 0; color: #222; font-size: 18px; letter-spacing: 0.5px;">HARUVESPER</h3>
     <p style="margin: 0 0 20px 0; color: #666; font-size: 14px; line-height: 1.6;">
       歡迎來到HARUVESPER展示間！<br>
       因為每日時間有限,設立此平台方便關心目前生產進度&許願<br>
@@ -473,7 +475,6 @@
     <a href="https://www.instagram.com/haru.vesper" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: white; text-decoration: none; padding: 10px 24px; border-radius: 25px; font-size: 14px; font-weight: bold; box-shadow: 0 4px 12px rgba(220, 39, 67, 0.25); transition: transform 0.2s;">
       <span>📸 Follow Instagram</span>
     </a>
-    
   </div>
 </div>
   <script>
@@ -481,33 +482,34 @@
     
     // 💡 單一分頁切換函數
     // 💡 用這段全三頁邏輯，完全取代舊的 switchTab
-function switchTab(tabName) {
-  const galleryTab = document.getElementById('galleryTab');
-  const requestTab = document.getElementById('requestTab');
-  const aboutTab = document.getElementById('aboutTab'); // ➕ 新增讀取
-  const btns = document.querySelectorAll('.tab-nav .tab-btn');
+// 💡 修正版：限定範圍只控制 tab-nav 內的按鈕，絕不影響產品框，且修復 About 點擊反應
+    function switchTab(tabName) {
+      const galleryTab = document.getElementById('galleryTab');
+      const requestTab = document.getElementById('requestTab');
+      const aboutTab = document.getElementById('aboutTab');
+      const btns = document.querySelectorAll('.tab-nav .tab-btn');
 
-  // 1. 先清除所有按鈕的 active 狀態
-  btns.forEach(btn => btn.classList.remove('active'));
+      // 1. 先清除導覽列內所有按鈕的 active 狀態
+      btns.forEach(btn => btn.classList.remove('active'));
 
-  // 2. 隱藏所有分頁內容
-  galleryTab.style.display = 'none';
-  requestTab.style.display = 'none';
-  aboutTab.style.display = 'none';
+      // 2. 隱藏所有分頁內容
+      if(galleryTab) galleryTab.style.display = 'none';
+      if(requestTab) requestTab.style.display = 'none';
+      if(aboutTab) aboutTab.style.display = 'none';
 
-  // 3. 根據點擊的頁籤，顯示對應內容並亮起按鈕
-  if (tabName === 'gallery') {
-    galleryTab.style.display = 'block';
-    btns[0].classList.add('active');
-  } else if (tabName === 'request') {
-    requestTab.style.display = 'block';
-    btns[1].classList.add('active');
-    fetchRequestList(); // 切換到許願池時自動載入清單
-  } else if (tabName === 'about') {
-    aboutTab.style.display = 'block';
-    btns[2].classList.add('active'); // ➕ 亮起 About 按鈕
-  }
-}
+      // 3. 根據點擊的頁籤，顯示對應內容並亮起正確的按鈕
+      if (tabName === 'gallery') {
+        if(galleryTab) galleryTab.style.display = 'block';
+        if(btns[0]) btns[0].classList.add('active');
+      } else if (tabName === 'request') {
+        if(requestTab) requestTab.style.display = 'block';
+        if(btns[1]) btns[1].classList.add('active');
+        fetchRequestList(); // 切換到許願池時自動載入清單
+      } else if (tabName === 'about') {
+        if(aboutTab) aboutTab.style.display = 'block';
+        if(btns[2]) btns[2].classList.add('active'); // 精確亮起第三個 About 按鈕
+      }
+    }
 
     // 初始化骨架屏 (顯示 6 個預設骨架卡片)
     function renderSkeletons() {
