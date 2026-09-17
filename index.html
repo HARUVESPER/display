@@ -323,6 +323,20 @@
       line-height: 1.4;
       word-break: break-all;
     }
+    /* 標籤基礎樣式 */
+.status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 12px;
+  border-radius: 12px;
+  font-weight: bold;
+  margin-left: 8px;
+}
+
+/* 各個狀態的顏色變化 */
+.status-願望已收到 { background-color: #e0e0e0; color: #666; }
+.status-製作中 { background-color: #fff3cd; color: #856404; }
+.status-已完成 { background-color: #d4edda; color: #155724; }
   </style>
   <script>
     !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):(e="undefined"!=typeof globalThis?globalThis:e||self).Swiper=t()}(this,(function(){"use strict";return class{constructor(e,t={}){this.el=e,this.wrapper=e.querySelector(".swiper-wrapper"),this.slides=Array.from(e.querySelectorAll(".swiper-slide")),this.activeIndex=0,this.params=t,this.init()}
@@ -499,15 +513,13 @@
     // 💡 渲染需求清單
     function renderRequestList(items) {
       const container = document.getElementById('requestList');
-      container.innerHTML = ''; // 徹底清空內容（包含任何殘留卡片）
+      container.innerHTML = '';
 
-      // 無內容時，僅純文字顯示「目前願望都已實現」，絕不生成任何卡片/格子 HTML
       if (!items || !Array.isArray(items) || items.length === 0) {
         container.innerHTML = '<div class="loading-msg">目前願望都已實現</div>';
         return;
       }
 
-      // 反轉陣列，讓最新提交的顯示在最上方
       items.reverse().forEach(item => {
         const div = document.createElement('div');
         div.className = 'request-item';
@@ -516,10 +528,17 @@
           ? `<div class="request-img-box"><img src="${item.imageUrl}" referrerpolicy="no-referrer" loading="lazy"></div>`
           : '';
 
+        // 💡 根據狀態給予不同的 CSS 類別 (例如：status-製作中, status-已完成)
+        const statusText = item.status || '願望已收到';
+        const statusClass = 'status-' + statusText;
+
         div.innerHTML = `
           ${imgHtml}
           <div class="request-info">
-            <div class="request-user-name">${item.userName}</div>
+            <div class="request-header">
+              <span class="request-user-name">${item.userName}</span>
+              <span class="status-badge ${statusClass}">${statusText}</span>
+            </div>
             <div class="request-comment-text">${item.comment || '無留言內容'}</div>
           </div>
         `;
@@ -609,7 +628,7 @@
         submitBtn.innerText = "送出願望";
 
         if (data.status === "success") {
-          alert("需求單已成功送出！");
+          alert("願望已成功送出！");
           document.getElementById("requestUser").value = "";
           document.getElementById("requestComment").value = "";
           document.getElementById("requestImage").value = "";
