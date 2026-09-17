@@ -395,7 +395,7 @@
   </div>
 
   <script>
-    const gasUrl = "https://script.google.com/macros/s/AKfycbwDEkkoG-3fELwnOuhkH8YoTaHuZNgAIpdllp75_G5WJlqU-Z_Db0Li4ewyvM_CGfqI/exec";
+    const gasUrl = "https://script.google.com/macros/s/AKfycbwCGnzmKiuaStJcyCr4VJsSAVPGA6DbeF3V6CG-U-Deo2t24HAtFF1z3IQeSWtNaBli/exec";
     
     // 💡 單一分頁切換函數
     function switchTab(tabName) {
@@ -409,12 +409,10 @@
       if (tabName === 'gallery') {
         galleryTab.style.display = 'block';
         requestTab.style.display = 'none';
-        pageTitle.innerText = '展示間';
         btns[0].classList.add('active');
       } else {
         galleryTab.style.display = 'none';
         requestTab.style.display = 'block';
-        pageTitle.innerText = '許願池';
         btns[1].classList.add('active');
         fetchRequestList(); // 切換到許願池時自動載入清單
       }
@@ -484,9 +482,10 @@
       });
     }
 
-    // 💡 抓取需求清單
+    // 💡 抓取需求清單（載入時先清空任何預設項目）
     function fetchRequestList() {
       const container = document.getElementById('requestList');
+      // 直接帶入文字提示，不生成任何空白卡片框
       container.innerHTML = '<div class="loading-msg">載入中...</div>';
       
       fetch(gasUrl + "?action=getRequests")
@@ -502,8 +501,9 @@
     // 💡 渲染需求清單
     function renderRequestList(items) {
       const container = document.getElementById('requestList');
-      container.innerHTML = '';
+      container.innerHTML = ''; // 徹底清空內容（包含任何殘留卡片）
 
+      // 無內容時，僅純文字顯示「目前願望都已實現」，絕不生成任何卡片/格子 HTML
       if (!items || !Array.isArray(items) || items.length === 0) {
         container.innerHTML = '<div class="loading-msg">目前願望都已實現</div>';
         return;
@@ -528,7 +528,6 @@
         container.appendChild(div);
       });
     }
-
     // 💡 需求單表單提交邏輯
     function submitRequest() {
       const userName = document.getElementById("requestUser").value.trim();
