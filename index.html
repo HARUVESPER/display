@@ -13,53 +13,71 @@
     body { font-family: "Microsoft JhengHei", Arial, sans-serif; background: #f8f9fa; padding: 15px; margin: 0; }
     h2 { text-align: center; color: #333; margin-bottom: 20px; letter-spacing: 1px; font-size: 22px; }
     
-    /* 💡 分頁導覽列樣式 */
+   /* 💡 分頁導覽列：手機滿版方便點選，大螢幕強迫收縮在中央，絕不填滿畫面 */
     .tab-nav {
       display: flex;
       justify-content: center;
-      gap: 10px;
-      margin-bottom: 20px;
+      gap: 8px; 
+      margin-bottom: 24px;
+      width: 100%;
+      max-width: 100%; /* 手機版預設滿版 */
+      margin-left: auto;
+      margin-right: auto;
+      box-sizing: border-box;
+      padding: 0 4px;
     }
-   /* 💡 分頁按鈕：三個按鈕絕對等寬，且字體自動適應大小不換行 */
-    .tab-btn {
+    /* 💡 核心修正：大螢幕（電腦/平板）下，限制按鈕欄的總寬度，讓它精緻適中 */
+    @media (min-width: 600px) {
+      .tab-nav {
+        max-width: 360px; /* 💡 關鍵設定：限制整條按鈕欄寬度，使其集中在中央，不隨網頁拉寬 */
+      }
+    }
+  /* 💡 分頁按鈕：三個按鈕絕對等寬，字體稍微調小（13px）以利精確塞入不換行 */
+    .tab-nav .tab-btn {
       flex: 1; /* 強制三個按鈕 1:1:1 絕對等寬 */
       background: #ffffff;
       border: 1px solid #ddd;
-      padding: 10px 4px; 
+      padding: 9px 4px; /* 精緻的上下高度 */
       border-radius: 20px;
-      font-size: 14px;
+      font-size: 13px; /* 💡 稍微縮小字體，確保在中英文下都能完美適應 */
       font-weight: bold;
       color: #666;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
       text-align: center;
-      white-space: nowrap;
+      white-space: nowrap; /* 強制不換行 */
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .tab-btn.active {
-      background: #333;
-      color: #fff;
-      border-color: #333;
+
+    /* 針對寬度特別窄的手機（如舊款 SE）再微調字體 */
+    @media (max-width: 340px) {
+      .tab-nav .tab-btn {
+        font-size: 11px;
+      }
     }
     
+    /* 💡 網格容器：手機維持最完美的 2 欄 */
     .grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr); 
+      grid-template-columns: repeat(2, 1fr); /* 手機版：絕對對稱 2 欄 */
       gap: 12px; 
-      max-width: 1200px;
+      max-width: 1200px; /* 限制網頁最大總寬度，防止無限拉大 */
       margin: 0 auto;
       box-sizing: border-box;
       width: 100%;
     }
     
-    @media (max-width: 360px) {
-      .tab-nav .tab-btn {
-        font-size: 12px;
+    /* 💡 核心修正：大螢幕（平板與電腦）下的專屬排版 */
+    @media (min-width: 600px) {
+      .grid {
+        /* 1. 關鍵解除：覆寫掉手機的兩欄限制，改為由基礎寬度自動塞滿欄位 */
+        /* 2. 鎖定寬度：設定 220px 確保維持您原本最滿意、最剛好的卡片大小（大螢幕會自動排成 4 欄、5 欄甚至 6 欄） */
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px; /* 拉開電腦版卡片間距 */
       }
-    }
 
     .tab-nav .tab-btn.active {
       background: #333;
@@ -85,19 +103,16 @@
       overflow: hidden;
     }
 
-    .swiper {
-      width: 100%;
-      aspect-ratio: 3 / 4;
-      height: auto; 
-      border-radius: 8px;
-      background: #f0f0f0; 
-      cursor: grab;
-      position: relative;
-      overflow: hidden;
-      list-style: none;
-      padding: 0;
-      z-index: 1;
-      user-select: none;
+    .swiper { 
+        /* 3. 完美維持 3:4 比例，高度隨寬度自適應，卡片絕對不會再橫向變形變寬 */
+        aspect-ratio: 3 / 4 !important; 
+        height: auto !important; 
+      }
+
+      .product-card { 
+        padding: 12px; /* 電腦版維持精緻的留白距離 */
+        border-radius: 16px; 
+      }
     }
     .swiper:active { cursor: grabbing; }
 
@@ -477,7 +492,7 @@
     
     // 💡 單一分頁切換函數
     // 💡 用這段全三頁邏輯，完全取代舊的 switchTab
-// 💡 修正版：限定範圍只控制 tab-nav 內的按鈕，絕不影響產品框，且修復 About 點擊反應
+// 💡 完美修復版：精確亮起對應按鈕，解決 classList.add 報錯導致顯示不出來的問題
     function switchTab(tabName) {
       const galleryTab = document.getElementById('galleryTab');
       const requestTab = document.getElementById('requestTab');
@@ -485,24 +500,26 @@
       const btns = document.querySelectorAll('.tab-nav .tab-btn');
 
       // 1. 先清除導覽列內所有按鈕的 active 狀態
-      btns.forEach(btn => btn.classList.remove('active'));
+      if (btns) {
+        btns.forEach(btn => btn.classList.remove('active'));
+      }
 
       // 2. 隱藏所有分頁內容
-      if(galleryTab) galleryTab.style.display = 'none';
-      if(requestTab) requestTab.style.display = 'none';
-      if(aboutTab) aboutTab.style.display = 'none';
+      if (galleryTab) galleryTab.style.display = 'none';
+      if (requestTab) requestTab.style.display = 'none';
+      if (aboutTab) aboutTab.style.display = 'none';
 
-      // 3. 根據點擊的頁籤，顯示對應內容並亮起正確的按鈕
+      // 3. 根據點擊的頁籤，顯示對應內容並精確亮起正確的按鈕
       if (tabName === 'gallery') {
-        if(galleryTab) galleryTab.style.display = 'block';
-        if(btns[0]) btns[0].classList.add('active');
+        if (galleryTab) galleryTab.style.display = 'block';
+        if (btns && btns[0]) btns[0].classList.add('active'); // 亮起第1個按鈕
       } else if (tabName === 'request') {
-        if(requestTab) requestTab.style.display = 'block';
-        if(btns[1]) btns[1].classList.add('active');
+        if (requestTab) requestTab.style.display = 'block';
+        if (btns && btns[1]) btns[1].classList.add('active'); // 亮起第2個按鈕
         fetchRequestList(); // 切換到許願池時自動載入清單
       } else if (tabName === 'about') {
-        if(aboutTab) aboutTab.style.display = 'block';
-        if(btns[2]) btns[2].classList.add('active'); // 精確亮起第三個 About 按鈕
+        if (aboutTab) aboutTab.style.display = 'block';
+        if (btns && btns[2]) btns[2].classList.add('active'); // 亮起第3個按鈕
       }
     }
 
