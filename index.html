@@ -548,7 +548,7 @@
           : '';
 
         // 💡 根據狀態給予不同的 CSS 類別 (例如：status-製作中, status-已完成)
-        const statusText = item.status || '願望已收到';
+        const statusText = item.status || '';
         const statusClass = 'status-' + statusText;
 
         div.innerHTML = `
