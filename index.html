@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer"> 
-  <title>HARUVESPER衣櫥展示</title>
+  <title>HARUVESPER衣櫥</title>
   <!-- 💡 網站 Icon 設定 -->
   <link rel="icon" type="image/jpeg" href="haruvesper.png">
   <link rel="apple-touch-icon" href="haruvesper.png">
@@ -179,7 +179,7 @@
 </head>
 
 <body>
-  <h2>Bbokari的衣櫥</h2>
+  <h2>展示間</h2>
   <div id="gallery" class="grid"></div>
 
   <script>
@@ -212,7 +212,7 @@
       })
       .catch(error => {
         console.error("衣櫥資料連線失敗:", error);
-        document.getElementById('gallery').innerHTML = '<div class="loading-msg">目前可能出現錯誤，衣櫃連線失敗</div>';
+        document.getElementById('gallery').innerHTML = '<div class="loading-msg">遇到一點問題，衣櫃連線失敗</div>';
       });
 
     function renderProducts(products) {
