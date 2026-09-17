@@ -235,6 +235,103 @@
       background: #ccc;
       cursor: not-allowed;
     }
+    /* 折疊選單樣式 */
+.request-accordion {
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 20px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.accordion-header {
+  padding: 14px 18px;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #f8f9fa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  list-style: none; /* 隱藏瀏覽器預設箭頭 */
+}
+
+.accordion-header::-webkit-details-marker {
+  display: none;
+}
+
+.request-accordion[open] .accordion-icon {
+  transform: rotate(180deg);
+}
+
+.accordion-content {
+  padding: 15px;
+  border-top: 1px solid #eee;
+}
+
+/* 需求列表與卡片樣式 */
+.request-list-container {
+  margin-top: 15px;
+}
+
+.list-title {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.request-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: #fff;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+
+.request-img-box {
+  width: 70px;
+  height: 70px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.request-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.no-img-text {
+  font-size: 0.75rem;
+  color: #aaa;
+}
+
+.request-info {
+  flex-grow: 1;
+}
+
+.request-user-name {
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.request-comment-text {
+  font-size: 0.85rem;
+  color: #555;
+  line-height: 1.4;
+  word-break: break-all;
+}
   </style>
   <script>
     !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):(e="undefined"!=typeof globalThis?globalThis:e||self).Swiper=t()}(this,(function(){"use strict";return class{constructor(e,t={}){this.el=e,this.wrapper=e.querySelector(".swiper-wrapper"),this.slides=Array.from(e.querySelectorAll(".swiper-slide")),this.activeIndex=0,this.params=t,this.init()}
@@ -262,7 +359,7 @@
   <!-- 💡 分頁按鈕頁籤 -->
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('gallery')">展示間</button>
-    <button class="tab-btn" onclick="switchTab('request')">需求單</button>
+    <button class="tab-btn" onclick="switchTab('request')">許願池</button>
   </div>
 
   <!-- 分頁 1：展示間 -->
@@ -271,24 +368,40 @@
   </div>
 
   <!-- 分頁 2：需求單 -->
-  <div id="requestTab" style="display: none;">
-    <div class="form-container">
+<div id="requestTab" style="display: none;">
+  
+  <!-- 1. 折疊式提交需求表單 (預設不加 open 即為折疊) -->
+  <details class="request-accordion">
+    <summary class="accordion-header">
+      <span>➕ 新增需求單</span>
+      <span class="accordion-icon">▼</span>
+    </summary>
+    <div class="accordion-content">
       <div class="form-group">
-        <label for="requestUser">提交人 / 稱呼 *</label>
-        <input type="text" id="requestUser" placeholder="例如：王小姐 / Line ID..." />
+        <label for="requestUser">您的稱呼 / 姓名 *</label>
+        <input type="text" id="requestUser" placeholder="例如：王小明" required>
       </div>
       <div class="form-group">
-        <label for="requestComment">需求 / 留言</label>
-        <textarea id="requestComment" rows="4" placeholder="請輸入您的需求或說明..."></textarea>
+        <label for="requestComment">需求描述 / 留言</label>
+        <textarea id="requestComment" rows="3" placeholder="請輸入您想許願或尋找的衣服類型..."></textarea>
       </div>
       <div class="form-group">
-        <label for="requestImage">上傳照片 (限制 2MB 以內)</label>
-        <input type="file" id="requestImage" accept="image/*" />
+        <label for="requestImage">上傳參考圖片 (選填)</label>
+        <input type="file" id="requestImage" accept="image/*">
       </div>
       <button id="submitBtn" class="submit-btn" onclick="submitRequest()">送出需求</button>
     </div>
+  </details>
+
+  <!-- 2. 下方需求列表區塊 -->
+  <div class="request-list-container">
+    <h3 class="list-title">📋 需求清單</h3>
+    <div id="requestList" class="request-list">
+      <div class="loading-msg">載入需求集中...</div>
+    </div>
   </div>
 
+</div>
   <script>
     const gasUrl = "https://script.google.com/macros/s/AKfycbzBHW1qssmUJhjjfYvpsWrvu3mHfB6g1vDmG92qd8mYDz95YkW3b3bzjueV7ZEijX9n/exec";
     
@@ -309,7 +422,7 @@
       } else {
         galleryTab.style.display = 'none';
         requestTab.style.display = 'block';
-        pageTitle.innerText = '提交需求單';
+        pageTitle.innerText = '願望列表';
         btns[1].classList.add('active');
       }
     }
@@ -376,7 +489,61 @@
         new Swiper(card.querySelector(".swiper"), { loop: false });
       });
     }
+// 頁面載入或切換分頁時抓取清單
+function fetchRequestList() {
+  const container = document.getElementById('requestList');
+  
+  // 呼叫 GAS 讀取需求單資料 (需確保 GAS doGET 有支援回傳需求單列表)
+  fetch(gasUrl + "?action=getRequests")
+    .then(res => res.json())
+    .then(data => {
+      renderRequestList(data);
+    })
+    .catch(err => {
+      container.innerHTML = '<div class="loading-msg">清單載入失敗</div>';
+    });
+}
 
+// 渲染清單 (圖片 + 留言)
+function renderRequestList(items) {
+  const container = document.getElementById('requestList');
+  container.innerHTML = '';
+
+  if (!items || items.length === 0) {
+    container.innerHTML = '<div class="loading-msg">目前還沒有人提交需求</div>';
+    return;
+  }
+
+  // 反轉陣列，讓最新提交的顯示在最上面
+  items.reverse().forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'request-item';
+
+    // 判斷有無圖片
+    const imgHtml = item.imageUrl 
+      ? `<img src="${item.imageUrl}" referrerpolicy="no-referrer" loading="lazy">`
+      : `<span class="no-img-text">無圖片</span>`;
+
+    div.innerHTML = `
+      <div class="request-img-box">
+        ${imgHtml}
+      </div>
+      <div class="request-info">
+        <div class="request-user-name">${item.userName}</div>
+        <div class="request-comment-text">${item.comment || '無留言內容'}</div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+// 修改切換頁面邏輯，切換至需求單時順便讀取清單
+function switchTab(tabName) {
+  // ... 原本的切換邏輯 ...
+  if (tabName === 'request') {
+    fetchRequestList(); // 載入需求清單
+  }
+}
     // 💡 需求單表單提交邏輯
    function submitRequest() {
   const userName = document.getElementById("requestUser").value.trim();
