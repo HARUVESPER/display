@@ -92,32 +92,33 @@
       pointer-events: none;
     }
 
-   .swiper-pagination {
-  position: absolute;
-  bottom: 8px;
-  left: 0;
-  width: 100%;
-  z-index: 10;
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-}
+    .swiper-pagination {
+      position: absolute;
+      bottom: 8px;
+      left: 0;
+      width: 100%;
+      z-index: 10;
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+    }
 
-/* 小圓點基本樣式（維持 6px 純淨大小，絕不增加點擊範圍） */
-.swiper-pagination-dot {
-  width: 6px;
-  height: 6px;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 50%;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.3s;
-}
+    /* 小圓點基本樣式 */
+    .swiper-pagination-dot {
+      width: 6px;
+      height: 6px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
 
-/* 當前選中圖片的圓點：顏色加深並微幅放大增強視覺感 */
-.swiper-pagination-dot.active {
-  background: rgba(0, 0, 0, 0.65);
-  transform: scale(1.15);
-}
+    /* 當前選中圖片的圓點 */
+    .swiper-pagination-dot.active {
+      background: rgba(0, 0, 0, 0.65);
+      transform: scale(1.15);
+    }
+
     @media (min-width: 600px) {
       .swiper { aspect-ratio: auto; height: 300px; }
       .product-card { padding: 15px; border-radius: 16px; }
@@ -277,19 +278,18 @@
       color: #333;
     }
 
-    /* 💡 將需求卡片設為相對定位，以便右上角定位 */
-.request-item {
-  position: relative; /* 關鍵：讓內部的右上角定位生效 */
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  background: #fff;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #eee;
-  margin-bottom: 10px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-}
+    .request-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: #fff;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #eee;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
 
     .request-img-box {
       width: 70px;
@@ -326,45 +326,127 @@
       line-height: 1.4;
       word-break: break-all;
     }
-    /* 💡 右上角彩色膠囊標籤（Badge） */
-.status-badge {
-  position: absolute;
-  top: 10px;
-  right: 12px;
-  padding: 3px 10px;
-  font-size: 11px;
-  font-weight: bold;
-  border-radius: 20px;
-  line-height: 1.2;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
 
-/* 💡 各狀態的繽紛彩色樣式 */
-.status-收到 {
-  background-color: #e9ecef;
-  color: #495057;
-  border: 1px solid #ced4da;
-}
+    /* 💡 右上角彩色膠囊標籤 */
+    .status-badge {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: bold;
+      border-radius: 20px;
+      line-height: 1.2;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
 
-.status-製作中 {
-  background-color: #fff3cd;
-  color: #856404;
-  border: 1px solid #ffeeba;
-}
+    .status-收到 {
+      background-color: #e9ecef;
+      color: #495057;
+      border: 1px solid #ced4da;
+    }
 
-.status-已完成待更新衣櫃 {
-  background-color: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-}
+    .status-製作中 {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+    }
+
+    .status-已完成待更新衣櫃 {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    /* 💡 About 頁面樣式 */
+    .about-container {
+      max-width: 650px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 25px 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+      box-sizing: border-box;
+    }
+
+    .about-header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .about-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .about-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      margin: 0 0 6px 0;
+    }
+
+    .about-subtitle {
+      font-size: 13px;
+      color: #888;
+      letter-spacing: 0.5px;
+    }
+
+    .about-section {
+      margin-bottom: 22px;
+    }
+
+    .about-section-title {
+      font-size: 15px;
+      font-weight: bold;
+      color: #222;
+      border-left: 3px solid #333;
+      padding-left: 8px;
+      margin-bottom: 10px;
+    }
+
+    .about-text {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #555;
+      margin: 0;
+    }
+
+    .about-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
+    .about-link-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: #f0f0f0;
+      color: #333;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: bold;
+      transition: all 0.2s ease;
+    }
+
+    .about-link-btn:hover {
+      background: #333;
+      color: #fff;
+    }
   </style>
   <script>
-    // 🛠️ 終極修復版：完美滑動吸附 + 原版純淨圓點不改範圍
     !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):(e="undefined"!=typeof globalThis?globalThis:e||self).Swiper=t()}(this,(function(){"use strict";return class{constructor(e,t={}){this.el=e,this.wrapper=e.querySelector(".swiper-wrapper"),this.slides=Array.from(e.querySelectorAll(".swiper-slide")),this.activeIndex=0,this.params=t,this.init()}
     init(){if(this.slides.length<=1)return;this.pagination=this.el.querySelector(".swiper-pagination");this.createDots();this.startX=0,this.currentX=0,this.isDown=!1,this.isMoving=!1;
     this.onMove=e=>this.dragMove(e.clientX);this.onEnd=()=>this.dragEnd();
     
-    // 💡 手機觸控：修正座標抓取與多指干擾
     this.el.addEventListener("touchstart",(e=>{this.dragStart(e.touches[0].clientX);this.startY=e.touches[0].clientY;}),{passive:!0});
     this.el.addEventListener("touchmove",(e=>{
       if(!this.isDown)return;
@@ -375,11 +457,10 @@
     }),{passive:!1});
     this.el.addEventListener("touchend",(()=>this.dragEnd()));
     
-    // 💡 電腦滑鼠：完整防護防止監聽器卡死
     this.el.addEventListener("mousedown",(e=>{e.preventDefault();this.dragStart(e.clientX);window.addEventListener("mousemove",this.onMove);window.addEventListener("mouseup",this.onEnd)}));
     }
     createDots(){this.slides.forEach((e,t)=>{const i=document.createElement("div");i.className="swiper-pagination-dot",0===t&&i.classList.add("active");i.addEventListener("click",(e)=>{e.stopPropagation();this.activeIndex=t;this.updatePosition()});this.pagination.appendChild(i)});this.dots=Array.from(this.pagination.querySelectorAll(".swiper-pagination-dot"))}
-    dragStart(e){this.startX=e;this.isDown=!0;this.isMoving=!1;this.wrapper.style.transition="none"}
+    dragStart(e){this.startX=e;this.isDown=!1;this.isMoving=!1;this.wrapper.style.transition="none"}
     dragMove(e){this.currentX=e;const t=this.currentX-this.startX,i=-this.activeIndex*this.el.getBoundingClientRect().width+t;this.wrapper.style.transform=`translateX(${i}px)`}
     dragEnd(){window.removeEventListener("mousemove",this.onMove);window.removeEventListener("mouseup",this.onEnd);if(!this.isDown)return;this.isDown=!1;if(!this.isMoving){this.currentX=0;return}this.isMoving=!1;const e=this.currentX-this.startX;if(Math.abs(e)>40&&this.currentX!==0){if(e>0){if(this.activeIndex>0)this.activeIndex--}else{if(this.activeIndex<this.slides.length-1)this.activeIndex++}}this.updatePosition();this.currentX=0}
     updatePosition(){const e=-this.activeIndex*100;this.wrapper.style.transform=`translateX(${e}%)`,this.wrapper.style.transition="transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)",this.updateDots()}
@@ -388,10 +469,11 @@
 </head>
 
 <body>
-    <!-- 💡 分頁按鈕頁籤 -->
+  <!-- 💡 分頁按鈕頁籤 (包含 3 個分頁) -->
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('gallery')">展示間</button>
     <button class="tab-btn" onclick="switchTab('request')">許願池</button>
+    <button class="tab-btn" onclick="switchTab('about')">關於我們</button>
   </div>
 
   <!-- 分頁 1：展示間 -->
@@ -435,27 +517,65 @@
 
   </div>
 
+  <!-- 💡 分頁 3：關於 HARUVESPER -->
+  <div id="aboutTab" style="display: none;">
+    <div class="about-container">
+      <div class="about-header">
+        <img src="haruvesper.png" alt="HARUVESPER" class="about-avatar" onerror="this.style.display='none'">
+        <h3 class="about-title">HARUVESPER</h3>
+        <span class="about-subtitle">Handmade Clothing & Fashion Wardrobe</span>
+      </div>
+
+      <div class="about-section">
+        <div class="about-section-title">品牌概念</div>
+        <p class="about-text">
+          歡迎來到 HARUVESPER 的專屬衣櫥！這裡收錄了精心設計與製作的手作服飾及精選穿搭。希望能為每位來到這裡的朋友，帶來日常搭配的靈感與美好。
+        </p>
+      </div>
+
+      <div class="about-section">
+        <div class="about-section-title">客製化與許願</div>
+        <p class="about-text">
+          有想找的款式或特殊的穿搭需求嗎？歡迎點擊上方「許願池」提交您的願望與參考圖片，我們會在收到後進行排單製作與評估。
+        </p>
+      </div>
+
+      <div class="about-section">
+        <div class="about-section-title">關注我們</div>
+        <div class="about-links">
+          <a href="https://instagram.com" target="_blank" class="about-link-btn">📷 Instagram</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const gasUrl = "https://script.google.com/macros/s/AKfycbxBScEcs_RbX11hhe5Un5sCVCrR2cSNMcq78dSR8rzjsdgpbnuCergPJmkgLSFUPRuy/exec";
     
-    // 💡 單一分頁切換函數
+    // 💡 單一分頁切換函數 (支援 3 個分頁)
     function switchTab(tabName) {
       const galleryTab = document.getElementById('galleryTab');
       const requestTab = document.getElementById('requestTab');
-      const pageTitle = document.getElementById('pageTitle');
+      const aboutTab = document.getElementById('aboutTab');
       const btns = document.querySelectorAll('.tab-btn');
 
       btns.forEach(btn => btn.classList.remove('active'));
 
+      // 隱藏所有分頁
+      galleryTab.style.display = 'none';
+      requestTab.style.display = 'none';
+      aboutTab.style.display = 'none';
+
       if (tabName === 'gallery') {
         galleryTab.style.display = 'block';
-        requestTab.style.display = 'none';
         btns[0].classList.add('active');
-      } else {
-        galleryTab.style.display = 'none';
+      } else if (tabName === 'request') {
         requestTab.style.display = 'block';
         btns[1].classList.add('active');
         fetchRequestList(); // 切換到許願池時自動載入清單
+      } else if (tabName === 'about') {
+        aboutTab.style.display = 'block';
+        btns[2].classList.add('active');
       }
     }
 
@@ -523,10 +643,9 @@
       });
     }
 
-    // 💡 抓取需求清單（載入時先清空任何預設項目）
+    // 💡 抓取需求清單
     function fetchRequestList() {
       const container = document.getElementById('requestList');
-      // 直接帶入文字提示，不生成任何空白卡片框
       container.innerHTML = '<div class="loading-msg">載入中...</div>';
       
       fetch(gasUrl + "?action=getRequests")
@@ -557,7 +676,6 @@
           ? `<div class="request-img-box"><img src="${item.imageUrl}" referrerpolicy="no-referrer" loading="lazy"></div>`
           : '';
 
-        // 💡 根據狀態給予不同的 CSS 類別 (例如：status-製作中, status-已完成)
         const statusText = item.status || '';
         const statusClass = 'status-' + statusText;
 
@@ -574,6 +692,7 @@
         container.appendChild(div);
       });
     }
+
     // 💡 需求單表單提交邏輯
     function submitRequest() {
       const userName = document.getElementById("requestUser").value.trim();
@@ -662,7 +781,6 @@
           document.getElementById("requestComment").value = "";
           document.getElementById("requestImage").value = "";
           
-          // 自動折疊表單並更新下方清單
           document.getElementById("requestAccordion").removeAttribute("open");
           fetchRequestList();
         } else {
