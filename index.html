@@ -418,9 +418,10 @@
 
     .about-links {
       display: flex;
+      flex-direction: column;
+      align-items: flex-start;
       gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 15px;
+      margin-top: 10px;
     }
 
     .about-link-btn {
@@ -500,7 +501,7 @@
           <textarea id="requestComment" rows="3" placeholder="可補充是給誰穿,顏色,件數..."></textarea>
         </div>
         <div class="form-group">
-          <label for="requestImage">上傳參考圖片(必填) </label>
+          <label for="requestImage">上傳參考圖片 (必填) *</label>
           <input type="file" id="requestImage" accept="image/*">
         </div>
         <button id="submitBtn" class="submit-btn" onclick="submitRequest()">送出願望</button>
@@ -521,7 +522,7 @@
   <div id="aboutTab" style="display: none;">
     <div class="about-container">
       <div class="about-header">
-        <img src="haruvesper.jpg" alt="HARUVESPER" class="about-avatar" onerror="this.style.display='none'">
+        <img src="haruvesper.png" alt="HARUVESPER" class="about-avatar" onerror="this.style.display='none'">
         <h3 class="about-title">HARUVESPER</h3>
         <span class="about-subtitle"> </span>
       </div>
@@ -548,7 +549,7 @@
       <div class="about-section">
         <div class="about-section-title">聯繫方式</div>
         <div class="about-links">
-          <p class="about-text">若需進一步溝通或是有任何建議,可以透過IG私訊,謝謝</p><br>
+          <p class="about-text">若需進一步溝通或是有任何建議,可以透過IG私訊,謝謝</p>
           <a href="https://www.instagram.com/haru.vesper" target="_blank" class="about-link-btn">📷 Instagram</a>
         </div>
       </div>
@@ -630,9 +631,11 @@
         card.className = 'product-card';
         var slidesHtml = '';
         
-        prod.images.forEach(function(imgUrl) {
-          slidesHtml += `<div class="swiper-slide"><img src="${imgUrl}" referrerpolicy="no-referrer" loading="lazy"></div>`;
-        });
+        if (prod.images && Array.isArray(prod.images)) {
+          prod.images.forEach(function(imgUrl) {
+            slidesHtml += `<div class="swiper-slide"><img src="${imgUrl}" referrerpolicy="no-referrer" loading="lazy"></div>`;
+          });
+        }
         
         card.innerHTML = `
           <div class="swiper">
@@ -664,39 +667,40 @@
         });
     }
 
-    // 💡 渲染需求清單
-    function renderRequestList(items) {
-      const container = document.getElementById('requestList');
-      container.innerHTML = '';
+    // 💡 渲染需求清單（已隱藏提交人姓名）
+function renderRequestList(items) {
+  const container = document.getElementById('requestList');
+  container.innerHTML = '';
 
-      if (!items || !Array.isArray(items) || items.length === 0) {
-        container.innerHTML = '<div class="loading-msg">目前願望都已實現</div>';
-        return;
-      }
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    container.innerHTML = '<div class="loading-msg">目前願望都已實現</div>';
+    return;
+  }
 
-      items.reverse().forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'request-item';
+  items.reverse().forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'request-item';
 
-        const imgHtml = item.imageUrl 
-          ? `<div class="request-img-box"><img src="${item.imageUrl}" referrerpolicy="no-referrer" loading="lazy"></div>`
-          : '';
+    const imgHtml = item.imageUrl 
+      ? `<div class="request-img-box"><img src="${item.imageUrl}" referrerpolicy="no-referrer" loading="lazy"></div>`
+      : '';
 
-        const statusText = item.status || '';
-        const statusClass = 'status-' + statusText;
+    const statusText = item.status || '收到';
+    const statusClass = 'status-' + statusText;
 
-        div.innerHTML = `
-          ${imgHtml}
-          <div class="request-info">
-            <div class="request-header">
-             <span class="status-badge ${statusClass}">${statusText}</span>
-            </div>
-            <div class="request-comment-text">${item.comment || ''}</div>
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    }
+    // 💡 這裡移除了原本的 ${item.userName}，只保留狀態標籤與留言內容
+    div.innerHTML = `
+      ${imgHtml}
+      <div class="request-info">
+        <div class="request-header">
+          <span class="status-badge ${statusClass}">${statusText}</span>
+        </div>
+        <div class="request-comment-text">${item.comment || '無留言內容'}</div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
 
     // 💡 需求單表單提交邏輯
     function submitRequest() {
@@ -711,8 +715,8 @@
         return;
       }
 
-      if (!comment && !file) {
-        alert("請至少輸入需求留言或選擇一張圖片！");
+      if (!file) {
+        alert("請上傳一張參考圖片！");
         return;
       }
 
