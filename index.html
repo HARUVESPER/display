@@ -559,32 +559,35 @@
   <script>
     const gasUrl = "https://script.google.com/macros/s/AKfycbxBScEcs_RbX11hhe5Un5sCVCrR2cSNMcq78dSR8rzjsdgpbnuCergPJmkgLSFUPRuy/exec";
     
-    // 💡 單一分頁切換函數 (支援 3 個分頁)
-    function switchTab(tabName) {
-      const galleryTab = document.getElementById('galleryTab');
-      const requestTab = document.getElementById('requestTab');
-      const aboutTab = document.getElementById('aboutTab');
-      const btns = document.querySelectorAll('.tab-btn');
+    // 💡 修改後的 switchTab 函式
+function switchTab(tabName) {
+  const galleryTab = document.getElementById('galleryTab');
+  const requestTab = document.getElementById('requestTab');
+  const aboutTab = document.getElementById('aboutTab');
+  const btns = document.querySelectorAll('.tab-btn');
 
-      btns.forEach(btn => btn.classList.remove('active'));
+  btns.forEach(btn => btn.classList.remove('active'));
 
-      // 隱藏所有分頁
-      galleryTab.style.display = 'none';
-      requestTab.style.display = 'none';
-      aboutTab.style.display = 'none';
+  // 隱藏所有分頁
+  galleryTab.style.display = 'none';
+  requestTab.style.display = 'none';
+  aboutTab.style.display = 'none';
 
-      if (tabName === 'gallery') {
-        galleryTab.style.display = 'block';
-        btns[0].classList.add('active');
-      } else if (tabName === 'request') {
-        requestTab.style.display = 'block';
-        btns[1].classList.add('active');
-        fetchRequestList(); // 切換到許願池時自動載入清單
-      } else if (tabName === 'about') {
-        aboutTab.style.display = 'block';
-        btns[2].classList.add('active');
-      }
-    }
+  if (tabName === 'gallery') {
+    galleryTab.style.display = 'block';
+    btns[0].classList.add('active');
+  } else if (tabName === 'request') {
+    requestTab.style.display = 'block';
+    btns[1].classList.add('active');
+    fetchRequestList(); // 切換到許願池時載入清單
+  } else if (tabName === 'about') {
+    aboutTab.style.display = 'block';
+    btns[2].classList.add('active');
+  }
+
+  // 💡 關鍵：更新網址的 Hash (如 #request、#about)
+  window.location.hash = tabName;
+}
 
     // 初始化骨架屏 (顯示 6 個預設骨架卡片)
     function renderSkeletons() {
@@ -802,6 +805,19 @@ function renderRequestList(items) {
         alert("發送失敗，請稍後再試。");
       });
     }
+
+    // 💡 頁面重新整理/載入時自動讀取網址 Hash 並停留在對應分頁
+window.addEventListener('DOMContentLoaded', () => {
+  // 取得網址的 # 後面名稱 (移除 # 號)
+  const currentHash = window.location.hash.replace('#', '');
+  
+  // 如果 Hash 屬於 valid 的分頁，就切換過去，否則預設走 gallery
+  if (currentHash === 'request' || currentHash === 'about' || currentHash === 'gallery') {
+    switchTab(currentHash);
+  } else {
+    switchTab('gallery');
+  }
+});
   </script>
 </body>
 
