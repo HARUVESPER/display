@@ -670,9 +670,9 @@ function switchTab(tabName) {
         });
     }
 
-    // 💡 渲染需求清單（已隱藏提交人姓名）
-function renderRequestList(items) {
+   function renderRequestList(items) {
   const container = document.getElementById('requestList');
+  if (!container) return;
   container.innerHTML = '';
 
   if (!items || !Array.isArray(items) || items.length === 0) {
@@ -680,27 +680,30 @@ function renderRequestList(items) {
     return;
   }
 
+  // 倒序顯示最新需求
   items.reverse().forEach(item => {
     const div = document.createElement('div');
     div.className = 'request-item';
 
+    // 圖片區塊
     const imgHtml = item.imageUrl 
       ? `<div class="request-img-box"><img src="${item.imageUrl}" referrerpolicy="no-referrer" loading="lazy"></div>`
       : '';
 
-    const statusText = item.status || '收到';
-    const statusClass = 'status-' + statusText;
+    // 狀態膠囊標籤（只有 E 欄有填字時才會顯示，空白不顯示）
+    const statusHtml = item.status 
+      ? `<span class="status-badge status-${item.status.trim()}">${item.status.trim()}</span>` 
+      : '';
 
-    // 💡 這裡移除了原本的 ${item.userName}，只保留狀態標籤與留言內容
+    // 💡 隱藏提交人姓名：request-info 內只保留留言內容
     div.innerHTML = `
       ${imgHtml}
       <div class="request-info">
-        <div class="request-header">
-          <span class="status-badge ${statusClass}">${statusText}</span>
-        </div>
         <div class="request-comment-text">${item.comment || '無留言內容'}</div>
       </div>
+      ${statusHtml}
     `;
+
     container.appendChild(div);
   });
 }
