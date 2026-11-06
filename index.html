@@ -494,11 +494,11 @@
       <div class="accordion-content">
         <div class="form-group">
           <label for="requestUser">您的暱稱 *</label>
-          <input type="text" id="requestUser" placeholder="例如：Haru" required>
+          <input type="text" id="requestUser" placeholder="例如：Haru" maxlength="30" required>
         </div>
         <div class="form-group">
           <label for="requestComment">需求描述 / 留言</label>
-          <textarea id="requestComment" rows="3" placeholder="可補充是給誰穿,顏色,件數..."></textarea>
+          <textarea id="requestComment" rows="3" maxlength="300" placeholder="可補充是給誰穿,顏色,件數..."></textarea>
         </div>
         <div class="form-group">
           <label for="requestImage">上傳參考圖片 (必填) *</label>
@@ -549,7 +549,7 @@
         <div class="about-section-title">聯繫方式</div>
         <div class="about-links">
           <p class="about-text">若需進一步溝通或是有任何建議,可以透過IG私訊,謝謝</p>
-          <a href="https://www.instagram.com/haru.vesper" target="_blank" class="about-link-btn">📷 Instagram</a>
+          <a href="https://www.instagram.com/haru.vesper" target="_blank" rel="noopener noreferrer" class="about-link-btn">📷 Instagram</a>
         </div>
       </div>
     </div>
@@ -557,36 +557,48 @@
 
   <script>
     const gasUrl = "https://script.google.com/macros/s/AKfycbxBScEcs_RbX11hhe5Un5sCVCrR2cSNMcq78dSR8rzjsdgpbnuCergPJmkgLSFUPRuy/exec";
-    
+
+    // 💡 安全：把文字跳脫，避免有人輸入 <script> 之類的程式碼被執行
+    function esc(s) {
+      return String(s ?? "").replace(/[&<>"']/g, c =>
+        ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+
+    // 💡 安全：圖片網址只允許 https，避免 javascript: 之類的網址
+    function safeUrl(u) {
+      u = String(u || "").trim();
+      return /^https:\/\//i.test(u) ? u.replace(/"/g, "%22") : "";
+    }
+
     // 💡 修改後的 switchTab 函式
-function switchTab(tabName) {
-  const galleryTab = document.getElementById('galleryTab');
-  const requestTab = document.getElementById('requestTab');
-  const aboutTab = document.getElementById('aboutTab');
-  const btns = document.querySelectorAll('.tab-btn');
+    function switchTab(tabName) {
+      const galleryTab = document.getElementById('galleryTab');
+      const requestTab = document.getElementById('requestTab');
+      const aboutTab = document.getElementById('aboutTab');
+      const btns = document.querySelectorAll('.tab-btn');
 
-  btns.forEach(btn => btn.classList.remove('active'));
+      btns.forEach(btn => btn.classList.remove('active'));
 
-  // 隱藏所有分頁
-  galleryTab.style.display = 'none';
-  requestTab.style.display = 'none';
-  aboutTab.style.display = 'none';
+      // 隱藏所有分頁
+      galleryTab.style.display = 'none';
+      requestTab.style.display = 'none';
+      aboutTab.style.display = 'none';
 
-  if (tabName === 'gallery') {
-    galleryTab.style.display = 'block';
-    btns[0].classList.add('active');
-  } else if (tabName === 'request') {
-    requestTab.style.display = 'block';
-    btns[1].classList.add('active');
-    fetchRequestList(); // 切換到許願池時載入清單
-  } else if (tabName === 'about') {
-    aboutTab.style.display = 'block';
-    btns[2].classList.add('active');
-  }
+      if (tabName === 'gallery') {
+        galleryTab.style.display = 'block';
+        btns[0].classList.add('active');
+      } else if (tabName === 'request') {
+        requestTab.style.display = 'block';
+        btns[1].classList.add('active');
+        fetchRequestList(); // 切換到許願池時載入清單
+      } else if (tabName === 'about') {
+        aboutTab.style.display = 'block';
+        btns[2].classList.add('active');
+      }
 
-  // 💡 關鍵：更新網址的 Hash (如 #request、#about)
-  window.location.hash = tabName;
-}
+      // 💡 關鍵：更新網址的 Hash (如 #request、#about)
+      window.location.hash = tabName;
+    }
 
     // 初始化骨架屏 (顯示 6 個預設骨架卡片)
     function renderSkeletons() {
@@ -623,7 +635,7 @@ function switchTab(tabName) {
       var gallery = document.getElementById('gallery');
       gallery.innerHTML = '';
       
-      if (!products || products.length === 0) {
+      if (!products || !Array.isArray(products) || products.length === 0) {
         gallery.innerHTML = '<div class="loading-msg">目前可能出現錯誤，衣櫃空空如也</div>';
         return;
       }
@@ -635,7 +647,9 @@ function switchTab(tabName) {
         
         if (prod.images && Array.isArray(prod.images)) {
           prod.images.forEach(function(imgUrl) {
-            slidesHtml += `<div class="swiper-slide"><img src="${imgUrl}" referrerpolicy="no-referrer" loading="lazy"></div>`;
+            var url = safeUrl(imgUrl);
+            if (!url) return;
+            slidesHtml += `<div class="swiper-slide"><img src="${url}" referrerpolicy="no-referrer" loading="lazy"></div>`;
           });
         }
         
@@ -645,8 +659,8 @@ function switchTab(tabName) {
             <div class="swiper-pagination"></div>
           </div>
           <div class="product-info">
-            <div class="product-name" title="${prod.name}">${prod.name}</div>
-            <div class="product-price">${prod.price}</div>
+            <div class="product-name" title="${esc(prod.name)}">${esc(prod.name)}</div>
+            <div class="product-price">${esc(prod.price)}</div>
           </div>
         `;
         gallery.appendChild(card);
@@ -669,43 +683,48 @@ function switchTab(tabName) {
         });
     }
 
-   function renderRequestList(items) {
-  const container = document.getElementById('requestList');
-  if (!container) return;
-  container.innerHTML = '';
+    function renderRequestList(items) {
+      const container = document.getElementById('requestList');
+      if (!container) return;
+      container.innerHTML = '';
 
-  if (!items || !Array.isArray(items) || items.length === 0) {
-    container.innerHTML = '<div class="loading-msg">目前願望都已實現</div>';
-    return;
-  }
+      if (!items || !Array.isArray(items) || items.length === 0) {
+        container.innerHTML = '<div class="loading-msg">目前願望都已實現</div>';
+        return;
+      }
 
-  // 倒序顯示最新需求
-  items.reverse().forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'request-item';
+      // 只允許這三種狀態顯示標籤，其他一律不顯示
+      const allowedStatus = ["收到", "製作中", "已完成待更新衣櫃"];
 
-    // 圖片區塊
-    const imgHtml = item.imageUrl 
-      ? `<div class="request-img-box"><img src="${item.imageUrl}" referrerpolicy="no-referrer" loading="lazy"></div>`
-      : '';
+      // 倒序顯示最新需求
+      items.reverse().forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'request-item';
 
-    // 狀態膠囊標籤（只有 E 欄有填字時才會顯示，空白不顯示）
-    const statusHtml = item.status 
-      ? `<span class="status-badge status-${item.status.trim()}">${item.status.trim()}</span>` 
-      : '';
+        // 圖片區塊（網址經過檢查）
+        const imgUrl = safeUrl(item.imageUrl);
+        const imgHtml = imgUrl
+          ? `<div class="request-img-box"><img src="${imgUrl}" referrerpolicy="no-referrer" loading="lazy"></div>`
+          : '';
 
-    // 💡 隱藏提交人姓名：request-info 內只保留留言內容
-    div.innerHTML = `
-      ${imgHtml}
-      <div class="request-info">
-        <div class="request-comment-text">${item.comment || '無留言內容'}</div>
-      </div>
-      ${statusHtml}
-    `;
+        // 狀態膠囊標籤（只有 E 欄有填且屬於允許的字才會顯示）
+        const st = String(item.status || "").trim();
+        const statusHtml = allowedStatus.includes(st)
+          ? `<span class="status-badge status-${st}">${st}</span>`
+          : '';
 
-    container.appendChild(div);
-  });
-}
+        // 💡 隱藏提交人姓名：request-info 內只保留留言內容（已跳脫）
+        div.innerHTML = `
+          ${imgHtml}
+          <div class="request-info">
+            <div class="request-comment-text">${esc(item.comment) || '無留言內容'}</div>
+          </div>
+          ${statusHtml}
+        `;
+
+        container.appendChild(div);
+      });
+    }
 
     // 💡 需求單表單提交邏輯
     function submitRequest() {
@@ -725,88 +744,90 @@ function switchTab(tabName) {
         return;
       }
 
+      // 原圖上限（會自動壓縮，但太大的原檔會讓手機瀏覽器吃力）
+      if (file.size > 15 * 1024 * 1024) {
+        alert("圖片檔案過大，請選擇 15MB 以內的照片！");
+        return;
+      }
+
       submitBtn.disabled = true;
       submitBtn.innerText = "上傳中...";
 
-      if (file) {
-        compressAndSend(file, userName, comment);
-      } else {
-        sendDataToGAS(userName, comment, null, null);
-      }
+      compressAndSend(file, userName, comment);
     }
 
-    // 壓縮圖片到指定大小以內並傳送
-function compressAndSend(file, userName, comment) {
-  const submitBtn = document.getElementById("submitBtn");
-  const reader = new FileReader();
+    // 壓縮圖片到 500KB 以內並傳送
+    function compressAndSend(file, userName, comment) {
+      const submitBtn = document.getElementById("submitBtn");
+      const reader = new FileReader();
 
-  reader.onload = function (e) {
-    const img = new Image();
-    img.onload = async function () {
-      try {
-        const compressedData = await compressToTarget(img, 500 * 1024);
-        const newName = file.name.replace(/\.[^.]+$/, "") + ".jpg";
-        sendDataToGAS(userName, comment, compressedData, newName);
-      } catch (err) {
-        submitBtn.disabled = false;
-        submitBtn.innerText = "送出願望";
-        alert("圖片壓縮失敗，請換一張圖片試試。");
-      }
-    };
-    img.onerror = function () {
-      submitBtn.disabled = false;
-      submitBtn.innerText = "送出願望";
-      alert("無法讀取這張圖片，請換一張。");
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
+      reader.onload = function (e) {
+        const img = new Image();
+        img.onload = async function () {
+          try {
+            const compressedData = await compressToTarget(img, 500 * 1024);
+            const newName = file.name.replace(/\.[^.]+$/, "") + ".jpg";
+            sendDataToGAS(userName, comment, compressedData, newName);
+          } catch (err) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "送出願望";
+            alert("圖片壓縮失敗，請換一張圖片試試。");
+          }
+        };
+        img.onerror = function () {
+          submitBtn.disabled = false;
+          submitBtn.innerText = "送出願望";
+          alert("無法讀取這張圖片，請換一張。");
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
 
-// 逐步降低品質 / 縮小尺寸，直到 <= maxBytes
-function compressToTarget(img, maxBytes) {
-  return new Promise((resolve, reject) => {
-    let maxSide = 1280; // 長邊上限
-    let quality = 0.9;
+    // 逐步降低品質 / 縮小尺寸，直到 <= maxBytes
+    function compressToTarget(img, maxBytes) {
+      return new Promise((resolve, reject) => {
+        let maxSide = 1600; // 長邊上限
+        let quality = 0.9;
 
-    const attempt = () => {
-      const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
-      const w = Math.round(img.width * scale);
-      const h = Math.round(img.height * scale);
+        const attempt = () => {
+          const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+          const w = Math.round(img.width * scale);
+          const h = Math.round(img.height * scale);
 
-      const canvas = document.createElement("canvas");
-      canvas.width = w;
-      canvas.height = h;
-      const ctx = canvas.getContext("2d");
-      ctx.fillStyle = "#fff"; // PNG 透明背景轉 JPEG 會變黑，先鋪白底
-      ctx.fillRect(0, 0, w, h);
-      ctx.drawImage(img, 0, 0, w, h);
+          const canvas = document.createElement("canvas");
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext("2d");
+          ctx.fillStyle = "#fff"; // PNG 透明背景轉 JPEG 會變黑，先鋪白底
+          ctx.fillRect(0, 0, w, h);
+          ctx.drawImage(img, 0, 0, w, h);
 
-      canvas.toBlob(blob => {
-        if (!blob) return reject(new Error("toBlob failed"));
+          canvas.toBlob(blob => {
+            if (!blob) return reject(new Error("toBlob failed"));
 
-        if (blob.size <= maxBytes) {
-          const fr = new FileReader();
-          fr.onload = () => resolve(fr.result); // data:image/jpeg;base64,...
-          fr.readAsDataURL(blob);
-          return;
-        }
+            if (blob.size <= maxBytes) {
+              const fr = new FileReader();
+              fr.onload = () => resolve(fr.result); // data:image/jpeg;base64,...
+              fr.readAsDataURL(blob);
+              return;
+            }
 
-        if (quality > 0.5) {
-          quality -= 0.1;                    // 先降品質
-        } else if (maxSide > 480) {
-          maxSide = Math.round(maxSide * 0.85); // 再縮尺寸
-          quality = 0.75;
-        } else {
-          return reject(new Error("cannot reach target size"));
-        }
+            if (quality > 0.5) {
+              quality -= 0.1;                       // 先降品質
+            } else if (maxSide > 480) {
+              maxSide = Math.round(maxSide * 0.85); // 再縮尺寸
+              quality = 0.75;
+            } else {
+              return reject(new Error("cannot reach target size"));
+            }
+            attempt();
+          }, "image/jpeg", quality);
+        };
+
         attempt();
-      }, "image/jpeg", quality);
-    };
-
-    attempt();
-  });
-}
+      });
+    }
 
     function sendDataToGAS(userName, comment, fileData, fileName) {
       const submitBtn = document.getElementById("submitBtn");
@@ -848,17 +869,17 @@ function compressToTarget(img, maxBytes) {
     }
 
     // 💡 頁面重新整理/載入時自動讀取網址 Hash 並停留在對應分頁
-window.addEventListener('DOMContentLoaded', () => {
-  // 取得網址的 # 後面名稱 (移除 # 號)
-  const currentHash = window.location.hash.replace('#', '');
-  
-  // 如果 Hash 屬於 valid 的分頁，就切換過去，否則預設走 gallery
-  if (currentHash === 'request' || currentHash === 'about' || currentHash === 'gallery') {
-    switchTab(currentHash);
-  } else {
-    switchTab('gallery');
-  }
-});
+    window.addEventListener('DOMContentLoaded', () => {
+      // 取得網址的 # 後面名稱 (移除 # 號)
+      const currentHash = window.location.hash.replace('#', '');
+      
+      // 如果 Hash 屬於 valid 的分頁，就切換過去，否則預設走 gallery
+      if (currentHash === 'request' || currentHash === 'about' || currentHash === 'gallery') {
+        switchTab(currentHash);
+      } else {
+        switchTab('gallery');
+      }
+    });
   </script>
 </body>
 
